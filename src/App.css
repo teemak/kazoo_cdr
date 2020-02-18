@@ -28,6 +28,46 @@
   color: #61dafb;
 }
 
+.windows {
+	margin: 15px;
+	border-radius: 15px;
+}
+
+.awning {
+	margin: 15px;
+	background: #22A5FF;
+	color: white;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	box-shadow: 0 1px 1px 1px #ddd;
+	display: flex;
+	padding: 0 10px;
+	justify-content: space-between;
+}
+
+.awning-title {
+}
+
+.caret {
+}
+
+.awning-icon  {
+	margin-right: 10px;
+}
+
+.filters-window {
+	background: #EEE;
+	display:flex;
+}
+
+.legs-window {
+	background: blue;
+}
+
+.main-legs {
+	background: #EEE;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -36,3 +76,4 @@
     transform: rotate(360deg);
   }
 }
+
