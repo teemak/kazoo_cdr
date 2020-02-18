@@ -1,6 +1,10 @@
+
 .App {
   text-align: center;
 }
+
+
+
 
 .App-logo {
   height: 40vmin;
@@ -45,19 +49,14 @@
 	justify-content: space-between;
 }
 
-.awning-title {
-}
-
-.caret {
-}
-
 .awning-icon  {
 	margin-right: 10px;
 }
 
 .filters-window {
 	background: #EEE;
-	display:flex;
+  display:flex;
+  justify-content: space-around;
 }
 
 .legs-window {
@@ -65,6 +64,7 @@
 }
 
 .main-legs {
+  width: 100%;
 	background: #EEE;
 }
 
