@@ -8,21 +8,26 @@ export default class MainLegs extends Component {
     }
 
     componentDidMount() {
-        const id = process.env.REACT_APP_ACCOUNT_ID;
-        const name = process.env.REACT_APP_ACCOUNT_NAME;
-        const creds = process.env.REACT_APP_CREDENTIALS;
-        axios.get('https://jsonplaceholder.typicode.com/users')
-            .then(res => {
-                this.setState({ logs: res.data })
-            });
+        console.log("COMPONENT DID MOUNT")
+        const url = process.env.REACT_APP_URL;
+        const token = process.env.REACT_APP_TOKEN;
+
+        console.log("URL", url)
+        console.log("TOKEN", token)
+        axios({ 
+            method: 'get', 
+            url,
+            headers: {
+                'x-auth-token': token,
+                'content-type': 'application/json' 
+            }
+        }).then(res => console.log(res));
     }
 
     render() {
         return (
             <ul>
-                <li>{id}</li>
-                <li>{name}</li>
-                <li>{creds}</li>
+                <li>Placeholder</li>
             </ul>
         )
     }

@@ -57,7 +57,6 @@ export default class MainView extends Component {
 					</p>
 				</div>
 				<div className="legs-window windows">
-					<MainLegs />
 					<table className="main-legs">
 						<thead>
 							<tr>
@@ -90,6 +89,7 @@ export default class MainView extends Component {
 							</tr>
 						</tbody>					
 					</table>
+					<MainLegs />
 				</div>
 			</div>
 		);
