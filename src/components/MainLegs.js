@@ -1,19 +1,21 @@
 import React, {Component} from 'react'
-import axios from 'axios'
+//import axios from 'axios'
+import fake from '../../src/data.json'
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";
 
 export default class MainLegs extends Component {
     state = {
-        logs: []
+        logs: fake
     }
 
     componentDidMount() {
-        console.log("COMPONENT DID MOUNT")
-        const url = process.env.REACT_APP_URL;
-        const token = process.env.REACT_APP_TOKEN;
+        //const url = process.env.REACT_APP_URL;
+        //const token = process.env.REACT_APP_TOKEN;
 
-        console.log("URL", url)
-        console.log("TOKEN", token)
+        /*
         axios({ 
             method: 'get', 
             url,
@@ -22,13 +24,42 @@ export default class MainLegs extends Component {
                 'content-type': 'application/json' 
             }
         }).then(res => console.log(res));
+        */
+    }
+    icon(direction) {
+        let point;
+        switch(direction) {
+            case 'inbound':
+                point = <FontAwesomeIcon icon={faArrowCircleRight} />
+                break;
+            case 'outbound':
+                point = <FontAwesomeIcon icon={faArrowCircleLeft} />
+                break;
+            default:
+                return;
+        }
+        return point;
     }
 
     render() {
+        //const call = this.state.logs.fake.data;
+        //console.log("TEST DATA", this.state.logs.data[0]);
         return (
-            <ul>
-                <li>Placeholder</li>
-            </ul>
+            <tbody>
+                {this.state.logs.data.map(call => {
+                    const {id, direction, caller_id_name, caller_id_number, callee_id_name, callee_id_number, hangup_cause, datetime, duration_seconds} = call;
+                    return (
+                        <tr key={id}>
+                            <td>{this.icon(direction)}</td>
+                            <td>{caller_id_name}<p>{caller_id_number}</p></td>
+                            <td>{callee_id_name}<p>{callee_id_number}</p></td>
+                            <td>{hangup_cause}</td>
+                            <td>{datetime}</td>
+                            <td>{duration_seconds}</td>
+                        </tr>
+                    );
+                })}
+            </tbody>
         )
     }
 }

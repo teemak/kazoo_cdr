@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import MainLegs from '../components/MainLegs';
+import Filter from '../components/Filter';
 
 export default class MainView extends Component {
 	render() {
@@ -29,22 +29,7 @@ export default class MainView extends Component {
 						{/* <Button>Week</Button> 
 						<Button>Month</Button> */}
 					</ButtonGroup>
-					<Input placeholder="Filter By Caller, Duration, Number..." />
-					{/* <p>DATE TO</p>
-					<Input placeholder="Start Date" />
-					<p>DATE FROM</p>
-					<Input placeholder="End Date" />
-					<p>TIME START</p>
-					<Input placeholder="9:00 AM" />
-					<p>TIME END</p>
-					<Input placeholder="5:00 PM" />
-					<p>DIRECTION</p>
-					<Input placeholder="Show Both" />
-					<p>USERS</p>
-					<Input placeholder="Show All" />
-					<p>NUMBERS</p>
-					<Input placeholder="Show All" /> */}
-
+					<Filter />
 					<Button>SEARCH</Button>
 				</div>
 				<div className="awning">
@@ -59,7 +44,7 @@ export default class MainView extends Component {
 				<div className="legs-window windows">
 					<table className="main-legs">
 						<thead>
-							<tr>
+							<tr className="table-header">
 								<th>Direction</th>
 								<th>From</th>
 								<th>To</th>
@@ -68,28 +53,8 @@ export default class MainView extends Component {
 								<th>Duration</th>
 							</tr>
 						</thead>
-						<tbody>					
-							<tr>
-							<td>Incoming</td>
-							<td>Tee Mak</td>
-							<td>Voicemail</td>
-							<td>Missed Call</td>
-							<td>2/14/2020</td>
-							<td>00:00:12</td>
-							</tr>
-						</tbody>
-						<tbody>					
-							<tr>
-								<td>Outgoing</td>
-								<td>Vinix</td>
-								<td>Tee Mak</td>
-								<td>Answered on Tee's Desk Phone</td>
-								<td>2/14/2020</td>
-								<td>00:00:20</td>
-							</tr>
-						</tbody>					
+						<MainLegs />
 					</table>
-					<MainLegs />
 				</div>
 			</div>
 		);
