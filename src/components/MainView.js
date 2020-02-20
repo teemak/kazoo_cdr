@@ -6,6 +6,7 @@ import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import MainLegs from '../components/MainLegs';
 import Filter from '../components/Filter';
+import CustomDate from '../components/CustomDate';
 
 export default class MainView extends Component {
 	render() {
@@ -29,6 +30,7 @@ export default class MainView extends Component {
 						{/* <Button>Week</Button> 
 						<Button>Month</Button> */}
 					</ButtonGroup>
+					<CustomDate />
 					<Filter />
 					<Button>SEARCH</Button>
 				</div>

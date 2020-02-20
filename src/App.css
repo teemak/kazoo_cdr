@@ -73,3 +73,20 @@ thead {
 tr:nth-child(even) {
   background: gray;
 }
+
+.custom-date {
+  display: flex;
+}
+
+.start-date {
+  //border: 1px solid black;
+  margin-right: 15px;
+}
+
+.end-date {
+  //border: 1px solid black;
+}
+
+.start-date-header, .end-date-header {
+  text-align: left;
+}
