@@ -4,8 +4,12 @@ import data from '../data.json'
 
 export default class Filter extends  Component {
     criteria(input) {
-        //console.log('FILTER THIS: ', input)
-        console.log('DATA: ', Object.values(data.data[0])) // Array of strings
+        console.log('FILTER THIS: ', input)
+        console.log('DATA: ', Object.values(data.data[0]).join()) // Array of strings
+
+        let search = input;
+        let regex = /(?:^|W)`${input}`(?:$|W)/
+        console.log("REGEX TESTER", regex);
 
         if(Object.values(data.data[0]) === input) {
             console.log("** THERE IS A MATCH")

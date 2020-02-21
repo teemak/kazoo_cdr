@@ -26,8 +26,8 @@ export default class MainView extends Component {
 						variant="contained"
 						color="primary"
 						aria-label="contained primary button group">
-						<Button>Today</Button>
-						{/* <Button>Week</Button> 
+						{/*<Button>Today</Button>
+						<Button>Week</Button> 
 						<Button>Month</Button> */}
 					</ButtonGroup>
 					<CustomDate />
