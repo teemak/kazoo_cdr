@@ -23,34 +23,48 @@
 }
 
 .windows {
-	margin: 15px;
+	margin: 20px;
 	border-radius: 15px;
 }
 
 .awning {
-	margin: 15px;
+  margin: 15px;
 	background: #22A5FF;
 	color: white;
 	border-top-left-radius: 15px;
 	border-top-right-radius: 15px;
-	box-shadow: 0 1px 1px 1px #ddd;
+	box-shadow: 0 10px 10px -5px #555;
 	display: flex;
 	padding: 0 10px;
-	justify-content: space-between;
+  justify-content: space-between;
+  position: sticky;
 }
 
-.awning-icon  {
-	margin-right: 10px;
+.awning-title {
+  margin-left: 20px;
+  font-weight: bold;
+  font-size: 1.4em;
+}
+
+.awning-icon, .caret {
+	margin-right: 20px;
+}
+
+.caret {
+  height: 100%;;
 }
 
 .filters-window {
 	background: #EEE;
   display:flex;
   justify-content: space-around;
+  padding: 45px 0;
+  margin-top: -30px;
 }
 
 .main-legs {
   width: 100%;
+  margin-top: -22px;
 	background: #EEE;
 }
 
@@ -58,20 +72,24 @@
   display: flex;
   justify-content: space-around;
   width: 100%;
-  background: gray;
+	background: #EEE;
 }
 
 .call-item {
   text-align: left;
 }
 
+.table-header {
+  height: 75px;
+}
+
 thead {
-  background: gray;
+  background: silver;
   color: white;
 }
 
 tr:nth-child(even) {
-  background: gray;
+  background: silver;
 }
 
 .custom-date {
@@ -79,14 +97,17 @@ tr:nth-child(even) {
 }
 
 .start-date {
-  //border: 1px solid black;
   margin-right: 15px;
 }
-
-.end-date {
-  //border: 1px solid black;
+.start-date-header {
+  padding: 0 15px;
 }
 
 .start-date-header, .end-date-header {
   text-align: left;
+}
+
+input.MuilnputBase-input.Muilnput-input {
+  width: 270px;
+  border: none;
 }

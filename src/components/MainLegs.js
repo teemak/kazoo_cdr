@@ -30,7 +30,7 @@ export default class MainLegs extends Component {
         let point;
         switch(direction) {
             case 'inbound':
-                point = <FontAwesomeIcon icon={faArrowCircleRight} />
+                point = <FontAwesomeIcon size={42} icon={faArrowCircleRight} />
                 break;
             case 'outbound':
                 point = <FontAwesomeIcon icon={faArrowCircleLeft} />

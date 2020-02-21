@@ -15,8 +15,6 @@ export default class CustomDate  extends Component {
         return (
             <span className="custom-date">
                 <div className="start-date">
-                    <p className="start-date-header">START DATE</p>
-                    <Input placeholder="Select Date" />
                     <DateRangePicker 
                         onChange={item => console.log(item)}
                         showSelectionPreview={true}
@@ -27,8 +25,6 @@ export default class CustomDate  extends Component {
                     />
                 </div>
                 <div className="end-date">
-                    <p className="end-date-header">END DATE</p>
-                    <Input placeholder="Select Date" />
                 </div>
             </span>
         )

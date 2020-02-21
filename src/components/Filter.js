@@ -18,7 +18,7 @@ export default class Filter extends  Component {
 
     render() {
         return (
-    		<Input placeholder="Filter By Caller, Duration, Number..." onChange={event => this.criteria(event.target.value)} />
+    		<Input id="outlined-basic" placeholder="Filter By Caller, Duration, Number..." onChange={event => this.criteria(event.target.value)} />
         );
     }
 }
