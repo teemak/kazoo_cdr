@@ -72,8 +72,8 @@ const getLogs = account_id => {
 			url_params: { account_id },
 			//query_string: "?paginate=true",
 			//query_string: "?page_size=10",
-			query_string: "?page_size=100",
-			//query_string: "?page_size=1000",
+			//query_string: "?page_size=100",
+			query_string: "?page_size=1000",
 		},
 		(err, body) => {
 			//console.log("** LOGS:\n", JSON.parse(JSON.stringify(body, null, 4)));
@@ -96,8 +96,9 @@ const calls = () => {
 				resolve(state);
 			} else {
 				reject("API DID NOT GET LOGS");
+				//process.exit(1);
 			}
-		}, 700);
+		}, 1500);
 	});
 };
 

@@ -111,3 +111,15 @@ input.MuilnputBase-input.Muilnput-input {
   width: 270px;
   border: none;
 }
+
+#outlined-basic {
+	//width: 100%;
+	width: 180px;
+	margin-right: 15px;
+}
+
+.filters-input {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+}

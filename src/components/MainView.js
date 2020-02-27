@@ -12,9 +12,15 @@ export default class MainView extends Component {
 	state = {
 		logs: [],
 		filter: "",
+		//filter: [],
 	};
 
 	componentDidMount() {
+		this.getLogs();
+	}
+
+	getLogs() {
+		//console.log("RUNNING GET LOGS");
 		axios({
 			method: "get",
 			url: "/calls",
@@ -24,7 +30,7 @@ export default class MainView extends Component {
 	}
 
 	filter(filter) {
-		console.log("** FILTER METHOD RUN");
+		//console.log("** FILTER METHOD RUN");
 		const result = [];
 		this.state.logs.forEach(call => {
 			const row = Object.values(call)
@@ -37,16 +43,12 @@ export default class MainView extends Component {
 	}
 
 	reset() {
-		axios({
-			method: "get",
-			url: "/calls",
-		}).then(res => {
-			this.setState({ logs: res.data });
-		});
-		console.log("STATE", this.state);
+		this.getLogs();
 	}
 
 	render() {
+		if (this.state.logs.length === 0) this.getLogs();
+		console.log("TOTAL:", this.state.logs.length);
 		return (
 			<div>
 				<div className="awning">
@@ -60,8 +62,12 @@ export default class MainView extends Component {
 				</div>
 				<div className="filters-window windows">
 					<CustomDate />
-					<Filter filterTerm={this.filter.bind(this)} />
-					<button onClick={() => this.reset()}>RESET</button>
+					<div className="filters-input">
+						<p>TOTAL: {this.state.logs.length}</p>
+						<p>{this.state.filter}</p>
+						<Filter filterTerm={this.filter.bind(this)} />
+						<button onClick={() => this.reset()}>RESET</button>
+					</div>
 				</div>
 				<div className="awning">
 					<p className="awning-title">
