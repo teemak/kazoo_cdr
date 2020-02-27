@@ -22,7 +22,7 @@ const getToken = (credentials, account_name, account_id) => {
 			data: { credentials, account_name },
 		},
 		(err, body) => {
-			console.log("BODY", body);
+			//console.log("BODY", body);
 			cb.set_auth_token(body.auth_token);
 			/* WHAT HAPPENS WHEN FILTERED API IS USED */
 			getLogs(account_id);

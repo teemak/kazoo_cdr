@@ -4,7 +4,7 @@ const port = 3333;
 const calls = require("./getLogs");
 
 app.get("/login", (req, res) => {
-	console.log("REQ", req);
+	//console.log("REQ", req);
 	//const calls = logs();
 	res.send("AUTHENTICATE DATA");
 });
