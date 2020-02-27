@@ -3,11 +3,49 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { faChartArea } from "@fortawesome/free-solid-svg-icons";
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
-import MainLegs from '../components/MainLegs';
-import Filter from '../components/Filter';
-import CustomDate from '../components/CustomDate';
+import MainLegs from "../components/MainLegs";
+import Filter from "../components/Filter";
+import CustomDate from "../components/CustomDate";
+import axios from "axios";
 
 export default class MainView extends Component {
+	state = {
+		logs: [],
+		filter: "",
+	};
+
+	componentDidMount() {
+		axios({
+			method: "get",
+			url: "/calls",
+		}).then(res => {
+			this.setState({ logs: res.data });
+		});
+	}
+
+	filter(filter) {
+		console.log("** FILTER METHOD RUN");
+		const result = [];
+		this.state.logs.forEach(call => {
+			const row = Object.values(call)
+				.flat()
+				.join("");
+			const match = row.includes(filter);
+			if (match) result.push(call);
+		});
+		this.setState({ logs: result });
+	}
+
+	reset() {
+		axios({
+			method: "get",
+			url: "/calls",
+		}).then(res => {
+			this.setState({ logs: res.data });
+		});
+		console.log("STATE", this.state);
+	}
+
 	render() {
 		return (
 			<div>
@@ -17,12 +55,13 @@ export default class MainView extends Component {
 						FILTERS
 					</p>
 					<p>
-						<FontAwesomeIcon className="caret" icon={faCaretRight} size='3x'/>
+						<FontAwesomeIcon className="caret" icon={faCaretRight} size="3x" />
 					</p>
 				</div>
 				<div className="filters-window windows">
 					<CustomDate />
-					<Filter />
+					<Filter filterTerm={this.filter.bind(this)} />
+					<button onClick={() => this.reset()}>RESET</button>
 				</div>
 				<div className="awning">
 					<p className="awning-title">
@@ -30,7 +69,7 @@ export default class MainView extends Component {
 						LOGS
 					</p>
 					<p>
-						<FontAwesomeIcon className="caret" icon={faCaretRight} size='3x'/>
+						<FontAwesomeIcon className="caret" icon={faCaretRight} size="3x" />
 					</p>
 				</div>
 				<div className="legs-window windows">
@@ -45,7 +84,7 @@ export default class MainView extends Component {
 								<th>Duration</th>
 							</tr>
 						</thead>
-						<MainLegs />
+						<MainLegs {...this.state} />
 					</table>
 				</div>
 			</div>
