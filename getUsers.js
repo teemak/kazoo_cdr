@@ -5,6 +5,7 @@ const cb = new Crossbar({
 	port: process.env.API_PORT,
 	version: process.env.API_VERSION,
 });
+
 const state = [];
 
 const getToken = (credentials, account_name, account_id) => {
@@ -19,7 +20,9 @@ const getToken = (credentials, account_name, account_id) => {
 			//console.log("BODY", body);
 			cb.set_auth_token(body.auth_token);
 			/* WHAT HAPPENS WHEN FILTERED API IS USED */
-			getLogs(account_id);
+			//getLogs(account_id);
+			//getNumbers(account_id);
+			getUsers(account_id);
 			/* setTimeout(() => {
 				//console.log("STATE: ", state);
 			}, 800); */
@@ -27,32 +30,26 @@ const getToken = (credentials, account_name, account_id) => {
 	);
 };
 
-const getLogs = account_id => {
-	//console.log("CDRS API CALL");
-	//cb.api.cdrs.get_cdrs(
-	cb.api.cdrs.get_interaction(
-		// only has correct direction
+getToken(process.env.credentials, process.env.account_name, process.env.account_id);
+
+const getUsers = account_id => {
+	cb.api.users.get_users(
 		{
-			url_params: { account_id },
-			//query_string: "?paginate=true",
-			//query_string: "?page_size=10",
-			query_string: "?page_size=100",
-			//query_string: "?page_size=1000", // NOT SCALABLE
+			url_params: { account_id: process.env.account_id },
 		},
 		(err, body) => {
-			//console.log("** LOGS:\n", JSON.parse(JSON.stringify(body, null, 4)));
-			const logs = JSON.parse(body);
-			const next_key = logs.next_start_key;
-			state.push(...logs.data);
-			//console.log("PUSHING CALLS");
-			//console.log("NEXT KEY:", next_key);
+			// ASSUMES THAT TOTAL PHONE NUMBERS IS LESS THAN 50
+			const users = JSON.parse(body).data;
+			users.forEach(user => {
+				const currentUser = `${user.first_name} ${user.last_name}`;
+				state.push(currentUser);
+			});
+			//console.log("USERS STATE: ", state);
 		},
 	);
 };
 
-getToken(process.env.credentials, process.env.account_name, process.env.account_id);
-
-const calls = () => {
+const users = () => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.length) {
@@ -66,4 +63,4 @@ const calls = () => {
 	});
 };
 
-module.exports = { calls };
+module.exports = { users };

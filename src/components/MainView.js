@@ -6,17 +6,22 @@ import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import MainLegs from "../components/MainLegs";
 import Filter from "../components/Filter";
 import CustomDate from "../components/CustomDate";
+import CustomTime from "../components/CustomTime";
+import DropDown from "../components/Dropdown";
 import axios from "axios";
 
 export default class MainView extends Component {
 	state = {
 		logs: [],
+		users: [],
+		numbers: [],
 		filter: "",
-		//filter: [],
 	};
 
 	componentDidMount() {
 		this.getLogs();
+		this.getUsers();
+		this.getNumbers();
 	}
 
 	getLogs() {
@@ -26,6 +31,27 @@ export default class MainView extends Component {
 			url: "/calls",
 		}).then(res => {
 			this.setState({ logs: res.data });
+		});
+	}
+
+	getUsers() {
+		//console.log("RUNNING GET LOGS");
+		axios({
+			method: "get",
+			url: "/users",
+		}).then(res => {
+			this.setState({ users: res.data });
+		});
+	}
+
+	getNumbers() {
+		//console.log("RUNNING GET LOGS");
+		axios({
+			method: "get",
+			url: "/numbers",
+		}).then(res => {
+			//console.log("NUMBERS:", res);
+			this.setState({ numbers: res.data });
 		});
 	}
 
@@ -48,7 +74,7 @@ export default class MainView extends Component {
 
 	render() {
 		if (this.state.logs.length === 0) this.getLogs();
-		console.log("TOTAL:", this.state.logs.length);
+		//console.log("TOTAL:", this.state.logs.length);
 		return (
 			<div>
 				<div className="awning">
@@ -62,10 +88,18 @@ export default class MainView extends Component {
 				</div>
 				<div className="filters-window windows">
 					<CustomDate />
+					<CustomTime />
+					<DropDown title="Select User" data={this.state.users} last="Show All Users" />
+					<DropDown
+						title="Select Number"
+						data={this.state.numbers}
+						last="Show All Numbers"
+					/>
 					<div className="filters-input">
-						<p>TOTAL: {this.state.logs.length}</p>
+						<p>{this.state.logs.length}</p>
 						<p>{this.state.filter}</p>
 						<Filter filterTerm={this.filter.bind(this)} />
+						<button>SEARCH</button>
 						<button onClick={() => this.reset()}>RESET</button>
 					</div>
 				</div>

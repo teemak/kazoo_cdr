@@ -1,7 +1,4 @@
 import React, { Component } from "react";
-//import axios from "axios";
-//import fake from "../../src/data.json";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";

@@ -123,3 +123,9 @@ input.MuilnputBase-input.Muilnput-input {
 	flex-direction: column;
 	justify-content: space-around;
 }
+
+.date-picker-container {
+	display: flex;
+	justify-content: space-evenly;
+	width: 100%;
+}

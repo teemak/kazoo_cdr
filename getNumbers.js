@@ -5,12 +5,9 @@ const cb = new Crossbar({
 	port: process.env.API_PORT,
 	version: process.env.API_VERSION,
 });
+
 const state = [];
-
 const getToken = (credentials, account_name, account_id) => {
-	/* THIS SHOULD RUN ON EVERY API CALL */
-	/* SO THAT THERE IS NO STALE TOKEN */
-
 	cb.api.user_auth.create_user_auth(
 		{
 			data: { credentials, account_name },
@@ -19,14 +16,30 @@ const getToken = (credentials, account_name, account_id) => {
 			//console.log("BODY", body);
 			cb.set_auth_token(body.auth_token);
 			/* WHAT HAPPENS WHEN FILTERED API IS USED */
-			getLogs(account_id);
-			/* setTimeout(() => {
-				//console.log("STATE: ", state);
-			}, 800); */
+			getNumbers(account_id);
 		},
 	);
 };
 
+getToken(process.env.credentials, process.env.account_name, process.env.account_id);
+
+const getNumbers = account_id => {
+	cb.api.numbers.get_numbers(
+		{
+			url_params: { account_id: process.env.account_id },
+		},
+		(err, body) => {
+			// ASSUMES THAT TOTAL PHONE NUMBERS IS LESS THAN 50
+			const numbers = JSON.parse(body).data;
+			// numbers are keys
+			const data = Object.keys(numbers.numbers);
+			state.push(...data);
+			//console.log("PHONE NUMBERS STATE:", state);
+		},
+	);
+};
+
+/*
 const getLogs = account_id => {
 	//console.log("CDRS API CALL");
 	//cb.api.cdrs.get_cdrs(
@@ -49,10 +62,9 @@ const getLogs = account_id => {
 		},
 	);
 };
+*/
 
-getToken(process.env.credentials, process.env.account_name, process.env.account_id);
-
-const calls = () => {
+const numbers = () => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.length) {
@@ -66,4 +78,4 @@ const calls = () => {
 	});
 };
 
-module.exports = { calls };
+module.exports = { numbers };
