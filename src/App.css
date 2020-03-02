@@ -129,3 +129,14 @@ input.MuilnputBase-input.Muilnput-input {
 	justify-content: space-evenly;
 	width: 100%;
 }
+
+.login {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	background: white;
+	justify-content: space-evenly;
+	align-items: center;
+	margin: 10% auto;
+	height: 500px;
+}

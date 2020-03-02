@@ -6,7 +6,7 @@ const { users } = require("./getUsers");
 const { numbers } = require("./getNumbers");
 
 app.get("/login", (req, res) => {
-	//console.log("REQ", req);
+	console.log("REQUEST FROM CLIENT:", req);
 	//const calls = logs();
 	res.send("AUTHENTICATED USER");
 });

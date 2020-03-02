@@ -25,7 +25,6 @@ export default class MainView extends Component {
 	}
 
 	getLogs() {
-		//console.log("RUNNING GET LOGS");
 		axios({
 			method: "get",
 			url: "/calls",
@@ -35,7 +34,6 @@ export default class MainView extends Component {
 	}
 
 	getUsers() {
-		//console.log("RUNNING GET LOGS");
 		axios({
 			method: "get",
 			url: "/users",
@@ -45,7 +43,6 @@ export default class MainView extends Component {
 	}
 
 	getNumbers() {
-		//console.log("RUNNING GET LOGS");
 		axios({
 			method: "get",
 			url: "/numbers",
@@ -55,8 +52,10 @@ export default class MainView extends Component {
 		});
 	}
 
+	/* SHOULD FILTER BASED ON USER/NUMBER/INPUT */
 	filter(filter) {
-		//console.log("** FILTER METHOD RUN");
+		// console.log("WHAT IS ARG:", filter); // typeof STRING
+		//console.log("FILTER IS:", filter);
 		const result = [];
 		this.state.logs.forEach(call => {
 			const row = Object.values(call)
@@ -66,6 +65,17 @@ export default class MainView extends Component {
 			if (match) result.push(call);
 		});
 		this.setState({ logs: result });
+		/* RETURNS FILTERED LOGS */
+		//console.log("FILTERED RESULT:", result);
+	}
+
+	/* CALLBACK FROM PARENT */
+	selectDropdown(selection) {
+		//console.log("SELECTION", selection);
+		if (selection === "Show All Users" || selection === "Show All Numbers") {
+			this.reset();
+		}
+		this.filter(selection);
 	}
 
 	reset() {
@@ -73,8 +83,8 @@ export default class MainView extends Component {
 	}
 
 	render() {
-		if (this.state.logs.length === 0) this.getLogs();
-		//console.log("TOTAL:", this.state.logs.length);
+		//console.log("RECEIVING THIS FROM THE CHILDREN", props);
+		//selected={this.selectDropdown.bind(this)}
 		return (
 			<div>
 				<div className="awning">
@@ -88,9 +98,16 @@ export default class MainView extends Component {
 				</div>
 				<div className="filters-window windows">
 					<CustomDate />
+
 					<CustomTime />
-					<DropDown title="Select User" data={this.state.users} last="Show All Users" />
 					<DropDown
+						selected={this.selectDropdown.bind(this)}
+						title="Select User"
+						data={this.state.users}
+						last="Show All Users"
+					/>
+					<DropDown
+						selected={this.selectDropdown.bind(this)}
 						title="Select Number"
 						data={this.state.numbers}
 						last="Show All Numbers"

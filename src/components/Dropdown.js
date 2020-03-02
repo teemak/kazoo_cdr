@@ -1,14 +1,18 @@
 import React from "react";
 
-const DropDown = ({ data, title, last }) => {
-	//console.log("** PROPS: ", data);
+const DropDown = ({ data, title, last, selected }) => {
+	//const [selection, setSelection] = useState("");
+	/*console.log("THIS PROPS IS DATA:", data);
+	console.log("WHAT IS TITLE:", title);
+	console.log("WHAT IS LAST:", last);*/
+	//console.log("SELECTION IS:", selection); // input's value
 	return (
 		<div>
 			<label htmlFor={title}>{title}</label>
-			<select id={title}>
+			<select id={title} onChange={event => selected(event.target.value)}>
 				{data.map((item, index) => {
 					return (
-						<option key={item + index} value={index}>
+						<option key={item} value={item}>
 							{item}
 						</option>
 					);
@@ -18,11 +22,5 @@ const DropDown = ({ data, title, last }) => {
 		</div>
 	);
 };
-/*
-				<option value="1">Tee</option>
-				<option value="2">Mark</option>
-				<option value="3">Sean</option>
-				<option value="4">Frank</option>
-				<option value="5">Jared</option>
-*/
+
 export default DropDown;
