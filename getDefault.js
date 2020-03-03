@@ -5,50 +5,57 @@ const cb = new Crossbar({
 	port: process.env.API_PORT,
 	version: process.env.API_VERSION,
 });
-const state = { logs: [], next_key: "" };
+const state = [];
 
-const getToken = (credentials, account_name, account_id, created_from, created_to) => {
+const getToken = (credentials, account_name, account_id) => {
 	cb.api.user_auth.create_user_auth(
 		{
 			data: { credentials, account_name },
 		},
 		(err, body) => {
 			cb.set_auth_token(body.auth_token);
+			getLogs(account_id);
 		},
 	);
 };
+
 getToken(process.env.credentials, process.env.account_name, process.env.account_id);
 
-const getLogs = (created_from, created_to) => {
-	/* use get_interaction api
-	 * only api that sends EXTENSION
-	 * call direction will be determined on client
-	 */
+const toGregorian = date => {
+	let result;
+	result = parseInt(date.getTime() / 1000 + 62167219200);
+	return result;
+};
+
+const getLogs = account_id => {
+	const start = new Date();
+	start.setHours(0, 0, 0, 0);
+	let end = new Date();
+	end.setHours(23, 59, 59, 999);
 
 	cb.api.cdrs.get_interaction(
 		{
-			url_params: { account_id: process.env.account_id },
-			query_string: `?created_from=${created_from}&created_to=${created_to}`,
+			url_params: { account_id },
+			query_string: `?created_from=${toGregorian(start)}&created_to=${toGregorian(end)}`,
+			//query_string: "?page_size=1000", // NOT SCALABLE
 		},
 		(err, body) => {
 			const logs = JSON.parse(body);
-			state.next_key = logs.next_start_key;
-			state.logs.push(...logs.data);
+			state.push(...logs.data);
 		},
 	);
 };
 
-const calls = (created_from, created_to) => {
-	getLogs(created_from, created_to);
+const auto = () => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
-			if (state.logs.length) {
+			if (state.length) {
 				resolve(state);
 			} else {
 				reject("API DID NOT GET LOGS");
 			}
-		}, 1500);
+		}, 1000);
 	});
 };
 
-module.exports = { calls };
+module.exports = { auto };

@@ -12,6 +12,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
     "concurrently": "^5.1.0",
     "crossbar-nodejs": "^1.0.0",
     "date-fns": "^2.9.0",

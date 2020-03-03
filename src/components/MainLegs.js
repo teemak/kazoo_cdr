@@ -13,6 +13,7 @@ export default class MainLegs extends Component {
 	}
 
 	icon(direction) {
+		/* DIRECTION NEEDS TO BE DETERMINED BEFORE HERE */
 		let point;
 		switch (direction) {
 			case "inbound":
@@ -42,28 +43,29 @@ export default class MainLegs extends Component {
 	render() {
 		return (
 			<tbody>
-				{this.state.logs.map(call => {
+				{this.state.logs.map((call, index) => {
 					const {
 						id,
 						direction,
 						caller_id_name,
 						caller_id_number,
 						callee_id_name,
-						callee_id_number,
+						dialed_number,
 						hangup_cause,
 						datetime,
 						duration_seconds,
 					} = call;
 					return (
 						<tr key={id}>
-							<td>{this.icon(direction)}</td>
+							<td>{index + 1}</td>
 							<td>
 								{caller_id_name}
 								<p>{caller_id_number}</p>
 							</td>
+							<td>{this.icon(direction)}</td>
 							<td>
 								{callee_id_name}
-								<p>{callee_id_number}</p>
+								<p>{dialed_number}</p>
 							</td>
 							<td>{hangup_cause}</td>
 							<td>{datetime}</td>
