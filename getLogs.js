@@ -25,9 +25,9 @@ const getLogs = (created_from, created_to) => {
 	 * call direction will be determined on client
 	 */
 
-	console.log("** COMPARE THIS TO CLIENT SIDE **");
-	console.log("CREATED_FROM", created_from);
-	console.log("CREATED_TO", created_to);
+	//console.log("** COMPARE THIS TO CLIENT SIDE **");
+	//console.log("CREATED_FROM", created_from);
+	//console.log("CREATED_TO", created_to);
 
 	cb.api.cdrs.get_interaction(
 		{
@@ -36,7 +36,7 @@ const getLogs = (created_from, created_to) => {
 		},
 		(err, body) => {
 			const logs = JSON.parse(body);
-			console.log("DATA TO PUSH TO STATE", logs.data);
+			//console.log("DATA TO PUSH TO STATE", logs.data);
 			state.next_key = logs.next_start_key;
 			state.logs.push(...logs.data);
 		},

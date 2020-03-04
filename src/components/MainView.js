@@ -105,8 +105,8 @@ export default class MainView extends Component {
 		const base = 62167219200;
 		const created_from = parseInt(this.state.startDate.getTime() / 1000 + base);
 		const created_to = parseInt(this.state.endDate.getTime() / 1000 + base);
-		console.log("START:", created_from);
-		console.log("END:", created_to);
+		//console.log("START:", created_from);
+		//console.log("END:", created_to);
 
 		axios
 			.post("/calls", {
@@ -147,7 +147,7 @@ export default class MainView extends Component {
 				/* ERROR */
 				// WHY DOES RESPONSE SEND MORE THAN 50? vvv
 				// DUPLICATES FROM PREVIOUS LOG ARE ADDED
-				console.log("SERVER RESPONSE LENGTH:", res.data.logs.length);
+				//console.log("SERVER RESPONSE LENGTH:", res.data.logs.length);
 				const prettyData = res.data.logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					return call;
@@ -159,16 +159,16 @@ export default class MainView extends Component {
 				// console.log("IDS", ids);
 				// console.log("**");
 				set.add(...ids);
-				console.log("SET LENGTH:", set.size);
+				//console.log("SET LENGTH:", set.size);
 				//console.log("Check calls for reason limit is exceeded:", res.data.logs);
 
 				//this.setState({ logs: [...this.state.logs, ...prettyData] });
 				this.setState({ logs: [...this.state.logs, ...prettyData] });
-				console.log("STATE SET");
+				//console.log("STATE SET");
 				//console.log("STATE:", this.state.logs);
 
 				if (res.data.next_key) {
-					console.log("NEXT KEY EXISTS: ", res.data.next_key);
+					//console.log("NEXT KEY EXISTS: ", res.data.next_key);
 					// is this too fast?????
 					this.nextKeyCall(created_from, created_to, res.data.next_key);
 				}

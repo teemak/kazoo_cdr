@@ -27,15 +27,17 @@ const getLogs = (created_from, created_to, next_key) => {
 	cb.api.cdrs.get_interaction(
 		{
 			url_params: { account_id: process.env.account_id },
-			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}&paginate=100`,
+			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}`,
+			//query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}&paginate=100`,
 		},
 		async (err, body) => {
+			// STATE NEEDS TO BE EMPTY TO PREVENT CACHING DUPLICATES
 			state.logs = [];
 			const logs = await JSON.parse(body);
-			console.log("SERVER SIDE LENGTH OF DATA", logs.data.length);
+			//console.log("SERVER SIDE LENGTH OF DATA", logs.data.length);
 			state.logs.push(...logs.data);
 			state.next_key = logs.next_start_key;
-			console.log("SERVER STATE:", state.logs.length);
+			//console.log("SERVER STATE:", state.logs.length);
 			//console.log("** GET NEXT LOGS RUN");
 			//console.log("NEED TO GET NEXT KEY TO PASS TO CLIENT:", logs.next_start_key);
 			//console.log("NEXT LOGS", logs);
