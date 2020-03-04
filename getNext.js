@@ -20,45 +20,41 @@ const getToken = (credentials, account_name, account_id, created_from, created_t
 getToken(process.env.credentials, process.env.account_name, process.env.account_id);
 
 const getLogs = (created_from, created_to, next_key) => {
-	/*console.log("CREATED FROM:", created_from);
-	console.log("CREATED TO:", created_to);*/
-	//console.log("GET NEXT KEY", next_key);
-	console.log("ORIGINAL KEY:", next_key);
+	//cb.api.cdrs.get_cdrs(
+	/*console.log("** start", created_from);
+	console.log("** end  ", created_to);
+	console.log("** key  ", next_key); //CORRECT*/
 	cb.api.cdrs.get_interaction(
 		{
 			url_params: { account_id: process.env.account_id },
-			//query_string: `?created_from=${created_from}&created_to=${created_to}&next_start_key=${next_key}`,
-			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}`,
+			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}&paginate=100`,
 		},
-		(err, body) => {
-			const logs = JSON.parse(body);
-			//state.next_key = logs.next_start_key;
-			//console.log("NEW KEY:     ", logs.next_start_key);
-			//console.log("***********");
-			/* ERROR HERE */
-			//console.log("?? NEXT DATA:", logs);
-			//console.log("** API RES DATA:", logs.data.length);
-			//console.log("**");
-			//console.log("API NEXT_KEY:", state.next_key);
+		async (err, body) => {
+			state.logs = [];
+			const logs = await JSON.parse(body);
+			console.log("SERVER SIDE LENGTH OF DATA", logs.data.length);
 			state.logs.push(...logs.data);
 			state.next_key = logs.next_start_key;
-			//console.log("STATE SERVER SIDE NEXT FROM NEXT API CALL", state);
+			console.log("SERVER STATE:", state.logs.length);
+			//console.log("** GET NEXT LOGS RUN");
+			//console.log("NEED TO GET NEXT KEY TO PASS TO CLIENT:", logs.next_start_key);
+			//console.log("NEXT LOGS", logs);
+			//console.log("RESPONSE SHOULD ONLY BE 50:", logs);
+			//console.log("STATE SERVER SIDE ====> CLIENT", state);
+			//console.log("*** NEXT_KEY", state.next_key);
 		},
 	);
 };
 
 const next = (created_from, created_to, next_key) => {
-	//console.log("**** ", next_key);
 	getLogs(created_from, created_to, next_key);
 
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.logs.length) {
-				//console.log("PROMISE RESOLVED");
 				resolve(state);
 			} else {
-				reject("API DID NOT GET LOGS");
-				//process.exit(1);
+				reject("GET NEXT_KEY API DID NOT GET LOGS");
 			}
 		}, 1500);
 	});

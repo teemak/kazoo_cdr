@@ -16,15 +16,17 @@ export default class MainView extends Component {
 		users: [],
 		numbers: [],
 		directions: ["inbound", "outbound"],
+		nextLogs: [],
 		startDate: new Date(),
 		endDate: new Date(),
 	};
+
+	temps = {};
 
 	componentDidMount() {
 		this.getUsers();
 		this.getNumbers();
 		this.defaultCall();
-		//this.getLogs();
 	}
 
 	defaultCall() {
@@ -36,11 +38,13 @@ export default class MainView extends Component {
 				call.direction = formatDirection(call.caller_id_number);
 				return call;
 			});
-			this.setState({ logs: prettyData });
+			// #1
+			this.setState({ logs: prettyData, nextLogs: [...prettyData] });
+			//console.log("* INITIAL STATE", this.state.logs);
 		});
 	}
 
-	getLogs() {
+	/*getLogs() {
 		axios({
 			method: "get",
 			url: "/calls",
@@ -51,7 +55,7 @@ export default class MainView extends Component {
 			});
 			this.setState({ logs: prettyData });
 		});
-	}
+	}*/
 
 	getUsers() {
 		axios({
@@ -71,7 +75,6 @@ export default class MainView extends Component {
 		});
 	}
 
-	/* SHOULD FILTER BASED ON USER/NUMBER/INPUT */
 	filter(filter) {
 		const result = [];
 		this.state.logs.forEach(call => {
@@ -81,7 +84,7 @@ export default class MainView extends Component {
 			const match = row.includes(filter);
 			if (match) result.push(call);
 		});
-		this.setState({ logs: result }); //ASYNC
+		this.setState({ logs: result });
 		/* RETURNS FILTERED LOGS */
 	}
 
@@ -98,45 +101,42 @@ export default class MainView extends Component {
 	}
 
 	search() {
-		/* MAKE AXIOS POST API CALL
-		 * endpoint /calls
-		 * START DATE
-		 * END DATE
-		 */
-		//console.log("* REQ TO SERVER ==>", this.state);
-		//this.setState({ logs: [] });
+		//console.log("BASE STATE", this.state.logs);
 		const base = 62167219200;
 		const created_from = parseInt(this.state.startDate.getTime() / 1000 + base);
 		const created_to = parseInt(this.state.endDate.getTime() / 1000 + base);
-		//console.log("* START:", created_from);
-		//console.log("** END:", created_to);
-		//console.log("SEARCH BUTTON PRESSED");
-		axios.create({ baseURL: "http://localhost:3333" });
+		console.log("START:", created_from);
+		console.log("END:", created_to);
+
 		axios
 			.post("/calls", {
 				created_from,
 				created_to,
 			})
 			.then(res => {
-				//console.log("CHECK NEXT_KEY", res.data);
 				const prettyData = res.data.logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					return call;
 				});
 				const { next_key } = res.data;
-				this.setState({ logs: prettyData, nextKey: next_key });
 
-				if (this.state.nextKey) {
-					this.nextKeyCall(created_from, created_to, this.state.nextKey);
+				// this.setState({ logs: prettyData, nextKey: next_key, nextLogs: [...prettyData] });
+				//console.log("** CALL LOGS:", prettyData); // CORRECT
+
+				/* INITIAL STATE */
+				this.setState({ logs: prettyData });
+
+				/* ONLY RUNS ONCE */
+				if (res.data.next_key) {
+					//console.log("NEXT KEY EXISTS");
+					this.nextKeyCall(created_from, created_to, next_key);
 				}
 			});
-		//console.log("STATE AFTER SEARCH PRESS:", this.state);
 	}
 
 	nextKeyCall(created_from, created_to, next_key) {
-		//console.log("NEXT API CALL RAN");
-		//console.log("* NEXT_KEY ===>", next_start_key);
-		//console.log("* RUNNING NEXT METHOD");
+		/* SCOPING PROBLEM EXISTS */
+		//console.log("NEXT FUNCTION RUN");
 		axios
 			.post("/next", {
 				created_from,
@@ -144,24 +144,47 @@ export default class MainView extends Component {
 				next_key,
 			})
 			.then(res => {
-				/* RECURSIVE CALL */
-				//console.log("STATE NEXT_KEY   ", next_key);
-				//console.log("RESPONSE NEXT_KEY", res.data.next_key);
-				console.log("FIRST KEY", next_key);
-				console.log("NEW KEY  ", res.data.next_key);
+				/* ERROR */
+				// WHY DOES RESPONSE SEND MORE THAN 50? vvv
+				// DUPLICATES FROM PREVIOUS LOG ARE ADDED
+				console.log("SERVER RESPONSE LENGTH:", res.data.logs.length);
+				const prettyData = res.data.logs.map(call => {
+					call.direction = formatDirection(call.caller_id_number);
+					return call;
+				});
+				// EXPECTING 2nd PART OF CALL LOGS // CORRECT
+				// console.log("NEXT CALL LOGS:", prettyData);
+				const ids = prettyData.map(item => item.id);
+				const set = new Set(ids);
+				// console.log("IDS", ids);
+				// console.log("**");
+				set.add(...ids);
+				console.log("SET LENGTH:", set.size);
+				//console.log("Check calls for reason limit is exceeded:", res.data.logs);
 
-				if (res.data.next_key !== next_key && res.data.next_key) {
-					//console.log("** RECURSIVE NEXT METHOD");
+				//this.setState({ logs: [...this.state.logs, ...prettyData] });
+				this.setState({ logs: [...this.state.logs, ...prettyData] });
+				console.log("STATE SET");
+				//console.log("STATE:", this.state.logs);
+
+				if (res.data.next_key) {
+					console.log("NEXT KEY EXISTS: ", res.data.next_key);
+					// is this too fast?????
 					this.nextKeyCall(created_from, created_to, res.data.next_key);
 				}
-				//console.log("STATE NEXT KEY:", this.state.nextKey);
-				this.setState({ logs: [...res.data.logs] });
-				//console.log("NEXT KEY:", res);
+
+				/*TESTING if (res.data.next_key !== next_key && res.data.next_key) {
+					this.nextKeyCall(created_from, created_to, res.data.next_key);
+				}*/
+
+				// this.setState({ nextLogs: [...res.data.logs] });
+				// this.setState({ logs: this.state.nextLogs });
+				// this.setState({ logs: [...this.state.logs, ...res.data.logs] });
 			});
 	}
 
 	reset() {
-		this.getLogs();
+		this.defaultCall();
 	}
 
 	startDate(date) {

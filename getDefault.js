@@ -27,7 +27,7 @@ const toGregorian = date => {
 	return result;
 };
 
-const getLogs = account_id => {
+const getLogs = () => {
 	const start = new Date();
 	start.setHours(0, 0, 0, 0);
 	let end = new Date();
@@ -35,9 +35,8 @@ const getLogs = account_id => {
 
 	cb.api.cdrs.get_interaction(
 		{
-			url_params: { account_id },
+			url_params: { account_id: process.env.account_id },
 			query_string: `?created_from=${toGregorian(start)}&created_to=${toGregorian(end)}`,
-			//query_string: "?page_size=1000", // NOT SCALABLE
 		},
 		(err, body) => {
 			const logs = JSON.parse(body);
@@ -52,7 +51,7 @@ const auto = () => {
 			if (state.length) {
 				resolve(state);
 			} else {
-				reject("API DID NOT GET LOGS");
+				reject("DEFAULT API DID NOT GET LOGS");
 			}
 		}, 1000);
 	});
