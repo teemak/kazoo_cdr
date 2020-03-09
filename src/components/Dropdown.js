@@ -1,12 +1,15 @@
 import React from "react";
 
-const DropDown = ({ data, title, last, selection, auto }) => {
-	//console.log("DATA IS ", data);
+const DropDown = ({ data, title, last, selection, auto, id }) => {
 	return (
-		<div>
-			<label htmlFor={title}>{title}</label>
+		<div className="dropdown-container">
+			<div className="dropdown-title-container">
+				<label htmlFor={title} className="dropdown-title" id={id}>
+					{title}
+				</label>
+			</div>
 
-			<select value={auto} id={title} onChange={event => selection(event.target.value)}>
+			<select id={title} onChange={event => selection(event.target.value)}>
 				{data.map((item, index) => {
 					return (
 						<option key={item} value={item}>

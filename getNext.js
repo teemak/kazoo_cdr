@@ -20,24 +20,19 @@ const getToken = (credentials, account_name, account_id, created_from, created_t
 getToken(process.env.credentials, process.env.account_name, process.env.account_id);
 
 const getLogs = (created_from, created_to, next_key) => {
-	//cb.api.cdrs.get_cdrs(
-	/*console.log("** start", created_from);
-	console.log("** end  ", created_to);
-	console.log("** key  ", next_key); //CORRECT*/
 	cb.api.cdrs.get_interaction(
 		{
 			url_params: { account_id: process.env.account_id },
 			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}`,
-			//query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}&paginate=100`,
 		},
-		async (err, body) => {
+		(err, body) => {
 			// STATE NEEDS TO BE EMPTY TO PREVENT CACHING DUPLICATES
-			state.logs = [];
-			const logs = await JSON.parse(body);
+			state.logs = []; // ALWAYS SENDS THE CORRECT AMOUNT
+			const logs = JSON.parse(body);
 			//console.log("SERVER SIDE LENGTH OF DATA", logs.data.length);
 			state.logs.push(...logs.data);
 			state.next_key = logs.next_start_key;
-			//console.log("SERVER STATE:", state.logs.length);
+			//console.log("** SERVER STATE:", state.logs.length);
 			//console.log("** GET NEXT LOGS RUN");
 			//console.log("NEED TO GET NEXT KEY TO PASS TO CLIENT:", logs.next_start_key);
 			//console.log("NEXT LOGS", logs);
@@ -54,6 +49,7 @@ const next = (created_from, created_to, next_key) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.logs.length) {
+				console.log("LENGTH OF RESOLVED STATE:", state.logs.length);
 				resolve(state);
 			} else {
 				reject("GET NEXT_KEY API DID NOT GET LOGS");

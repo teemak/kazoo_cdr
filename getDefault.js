@@ -33,6 +33,7 @@ const getLogs = () => {
 	let end = new Date();
 	end.setHours(23, 59, 59, 999);
 
+	//cb.api.cdrs.get_cdrs(
 	cb.api.cdrs.get_interaction(
 		{
 			url_params: { account_id: process.env.account_id },

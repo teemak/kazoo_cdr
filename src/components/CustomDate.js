@@ -30,7 +30,7 @@ export default class CustomDate extends Component {
 			<div className="date-picker-container">
 				<div className="start-date-container">
 					<div>
-						<p>Start Date</p>
+						<p className="date-label">Start Date</p>
 						<DatePicker
 							className="start-date"
 							onChange={date => {
@@ -39,7 +39,7 @@ export default class CustomDate extends Component {
 							}}
 							selected={this.state.startDate}
 						/>
-						<p>Start Time</p>
+						<p className="date-label">Start Time</p>
 						<DatePicker
 							className="start-date"
 							selected={this.state.startDate}
@@ -57,7 +57,7 @@ export default class CustomDate extends Component {
 				</div>
 				<div className="end-date-container">
 					<div>
-						<p>End Date</p>
+						<p className="date-label">End Date</p>
 						<DatePicker
 							className="end-date"
 							onChange={date => {
@@ -66,7 +66,7 @@ export default class CustomDate extends Component {
 							}}
 							selected={this.state.endDate}
 						/>
-						<p>End Time</p>
+						<p className="date-label">End Time</p>
 						<DatePicker
 							className="end-date"
 							selected={this.state.endDate}

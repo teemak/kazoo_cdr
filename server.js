@@ -6,6 +6,7 @@ const { calls } = require("./getLogs");
 const { users } = require("./getUsers");
 const { numbers } = require("./getNumbers");
 const { next } = require("./getNext");
+const { legs } = require("./getLegs");
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
@@ -46,6 +47,13 @@ app.get("/users", (req, res) => {
 
 app.get("/numbers", (req, res) => {
 	const logs = numbers();
+	logs.then(data => {
+		res.send(data);
+	});
+});
+
+app.get("/legs", (req, res) => {
+	const logs = legs();
 	logs.then(data => {
 		res.send(data);
 	});

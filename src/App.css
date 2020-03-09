@@ -28,7 +28,7 @@
 }
 
 .awning {
-  margin: 15px;
+	margin: 15px;
 	background: #22A5FF;
 	color: white;
 	border-top-left-radius: 15px;
@@ -36,8 +36,8 @@
 	box-shadow: 0 10px 10px -5px #555;
 	display: flex;
 	padding: 0 10px;
-  justify-content: space-between;
-  position: sticky;
+    justify-content: space-between;
+    position: sticky;
 }
 
 .awning-title {
@@ -113,21 +113,28 @@ input.MuilnputBase-input.Muilnput-input {
 }
 
 #outlined-basic {
-	//width: 100%;
-	width: 180px;
+	width: 210px;
 	margin-right: 15px;
+	height: 30px;
 }
 
 .filters-input {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-around;
+}
+
+.filter-label {
+	margin-top: 25px;
+	text-align: start;
+	padding: 4px;
+	padding-left: 14px;
 }
 
 .date-picker-container {
 	display: flex;
 	justify-content: space-evenly;
-	width: 100%;
+	width: 35%;
+	margin-right: -50px;
 }
 
 .login {
@@ -140,3 +147,95 @@ input.MuilnputBase-input.Muilnput-input {
 	margin: 10% auto;
 	height: 500px;
 }
+
+.filter-button-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-right: 25px;
+}
+
+.filter-button {
+	font-weight: 600;
+	padding: 0 20px;
+	letter-spacing: 1px;
+	height: 30px;
+	cursor: pointer;
+	border: .5px solid gray;
+	border-radius: 5px;
+	background: linear-gradient(to bottom, #fff, #e6e6e6);
+}
+
+input[type=text], select {
+	margin: 0 5px;
+	border-radius: 5px;
+	width: 80px;
+	height: 25px;
+	font-size: small;
+	padding: 0 9px;
+	border: .5px solid gray;
+	cursor: pointer;
+}
+
+.date-label {
+	transform: translate(-4px, 10px);
+	cursor: default;
+}
+
+select {
+	width: 100%;
+	height: 30px;
+}
+
+.dropdown-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 45px;
+
+}
+
+.dropdown-title-container {
+	margin: 5px;
+}
+
+.dropdown-title {
+	text-align: start;
+}
+
+#select-user {
+	padding-right: 65px;
+}
+
+#select-number {
+	padding-right: 6px;
+}
+
+.meta-data { 
+	margin: 10px;
+	display: flex;
+}
+
+.meta-data-item {
+	color: black;
+}
+
+.meta-data-item {
+	margin-right: 50px;
+}
+
+#awning-log {
+	position: sticky;
+	top: 0px;
+}
+
+.done, .total {
+	color: #00ff0a;
+}
+
+.loading {
+	color: #cb1414;
+	font-weight: 400;
+}
+

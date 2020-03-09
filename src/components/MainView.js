@@ -1,24 +1,37 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
-import { faChartArea } from "@fortawesome/free-solid-svg-icons";
-import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import {
+	faChartArea,
+	faArrowCircleLeft,
+	faArrowCircleRight,
+} from "@fortawesome/free-solid-svg-icons";
 import MainLegs from "../components/MainLegs";
 import Filter from "../components/Filter";
 import CustomDate from "../components/CustomDate";
 import DropDown from "../components/Dropdown";
 import axios from "axios";
+import formatPhoneNumber from "../helper/formatPhoneNumber";
 import formatDirection from "../helper/formatDirection";
+import formatDisposition from "../helper/formatDisposition";
 
 export default class MainView extends Component {
 	state = {
 		logs: [],
 		users: [],
 		numbers: [],
-		directions: ["inbound", "outbound"],
+		directions: ["Inbound", "Outbound"],
 		nextLogs: [],
 		startDate: new Date(),
 		endDate: new Date(),
+		user: "All Users",
+		number: "All Numbers",
+		direction: "All Directions",
+		tags: [],
+		//tags: new Set(),
+		startTime: "",
+		endTime: "",
+		status: "Done",
 	};
 
 	temps = {};
@@ -27,6 +40,30 @@ export default class MainView extends Component {
 		this.getUsers();
 		this.getNumbers();
 		this.defaultCall();
+		this.getTime(1);
+	}
+
+	getTime(first) {
+		const meridian = time => (time > 12 ? "PM" : "AM");
+		const hours = hour => (hour >= 12 ? hour - 12 : hour);
+		const hour = hour => (hour === 0 ? 12 : hour);
+		const minutes = minutes => (minutes < 10 ? `0${minutes}` : minutes);
+		let startTime;
+
+		if (first) {
+			startTime = "00:00 AM";
+		} else {
+			startTime = `${hour(hours(this.state.startDate.getHours()))}:${minutes(
+				this.state.startDate.getMinutes(),
+			)} ${meridian(this.state.startDate.getHours())}`;
+		}
+
+		this.setState({
+			startTime,
+			endTime: `${hour(hours(this.state.endDate.getHours()))}:${minutes(
+				this.state.endDate.getMinutes(),
+			)} ${meridian(this.state.endDate.getHours())}`,
+		});
 	}
 
 	defaultCall() {
@@ -36,26 +73,15 @@ export default class MainView extends Component {
 		}).then(res => {
 			const prettyData = res.data.map(call => {
 				call.direction = formatDirection(call.caller_id_number);
-				return call;
-			});
-			// #1
-			this.setState({ logs: prettyData, nextLogs: [...prettyData] });
-			//console.log("* INITIAL STATE", this.state.logs);
-		});
-	}
-
-	/*getLogs() {
-		axios({
-			method: "get",
-			url: "/calls",
-		}).then(res => {
-			const prettyData = res.data.map(call => {
-				call.direction = formatDirection(call.caller_id_number);
+				call.caller_id_number = formatPhoneNumber(call.caller_id_number);
+				call.dialed_number = formatPhoneNumber(call.callee_id_number);
+				call.hangup_cause = formatDisposition(call.callee_id_name, call.hangup_cause);
+				//call.callee_id_name = formatPhoneNumber(call.callee_id_name);
 				return call;
 			});
 			this.setState({ logs: prettyData });
 		});
-	}*/
+	}
 
 	getUsers() {
 		axios({
@@ -91,52 +117,78 @@ export default class MainView extends Component {
 	/* CALLBACK FROM PARENT */
 	selectDropdown(selection) {
 		if (
-			selection === "Show All Users" ||
-			selection === "Show All Numbers" ||
-			selection === "Show All Directions"
+			selection === "All Users" ||
+			selection === "All Numbers" ||
+			selection === "All Directions"
 		) {
 			this.reset();
 		}
 		this.filter(selection);
+		//const items = [this.state.tags.add(selection)];
+		//this.setState({ user: selection, tags: [this.state.tags, selection] });
+		this.setState({ user: selection, tags: [...this.state.tags, selection] });
+	}
+
+	clear() {
+		/* SET STATE IS ASYNCHRONOUS */
+		this.setState({ logs: [] }, () => {
+			this.getData();
+		});
 	}
 
 	search() {
-		//console.log("BASE STATE", this.state.logs);
 		const base = 62167219200;
 		const created_from = parseInt(this.state.startDate.getTime() / 1000 + base);
 		const created_to = parseInt(this.state.endDate.getTime() / 1000 + base);
-		//console.log("START:", created_from);
-		//console.log("END:", created_to);
 
 		axios
 			.post("/calls", {
 				created_from,
 				created_to,
+				//paginate=50
 			})
 			.then(res => {
-				const prettyData = res.data.logs.map(call => {
+				let { next_key, logs } = res.data;
+				/* EVIL HACK
+				 * caches previous server response
+				 * if it caches we only want the most recent data
+				 * which is the last 50 or page length of api call
+				 */
+				if (logs.length > 50) {
+					logs = logs.slice(-50);
+				}
+
+				/*let prettyData = logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					return call;
+				});*/
+				const prettyData = logs.map(call => {
+					call.direction = formatDirection(call.caller_id_number);
+					call.caller_id_number = formatPhoneNumber(call.caller_id_number);
+					call.dialed_number = formatPhoneNumber(call.callee_id_number);
+					call.hangup_cause = formatDisposition(call.callee_id_name, call.hangup_cause);
+					//call.callee_id_name = formatPhoneNumber(call.callee_id_name);
+					return call;
 				});
-				const { next_key } = res.data;
 
-				// this.setState({ logs: prettyData, nextKey: next_key, nextLogs: [...prettyData] });
-				//console.log("** CALL LOGS:", prettyData); // CORRECT
-
-				/* INITIAL STATE */
-				this.setState({ logs: prettyData });
-
-				/* ONLY RUNS ONCE */
-				if (res.data.next_key) {
-					//console.log("NEXT KEY EXISTS");
+				if (next_key) {
+					this.setState({ nextLogs: [...prettyData], status: "Loading" });
 					this.nextKeyCall(created_from, created_to, next_key);
+				} else {
+					this.setState({ logs: prettyData });
 				}
 			});
+		this.getTime();
 	}
 
+	/* RECURSIVE SCOPING EXISTS */
 	nextKeyCall(created_from, created_to, next_key) {
 		/* SCOPING PROBLEM EXISTS */
 		//console.log("NEXT FUNCTION RUN");
+		//const existingLogs = [];
+		//console.log("PREVIOUS LOGS", previousLogs);
+		//console.log("** running nextKeyCall", next_key);
+		//while (next_key) {
 		axios
 			.post("/next", {
 				created_from,
@@ -144,43 +196,46 @@ export default class MainView extends Component {
 				next_key,
 			})
 			.then(res => {
-				/* ERROR */
-				// WHY DOES RESPONSE SEND MORE THAN 50? vvv
-				// DUPLICATES FROM PREVIOUS LOG ARE ADDED
-				//console.log("SERVER RESPONSE LENGTH:", res.data.logs.length);
 				const prettyData = res.data.logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					return call;
 				});
-				// EXPECTING 2nd PART OF CALL LOGS // CORRECT
-				// console.log("NEXT CALL LOGS:", prettyData);
-				const ids = prettyData.map(item => item.id);
-				const set = new Set(ids);
-				// console.log("IDS", ids);
-				// console.log("**");
-				set.add(...ids);
-				//console.log("SET LENGTH:", set.size);
-				//console.log("Check calls for reason limit is exceeded:", res.data.logs);
-
-				//this.setState({ logs: [...this.state.logs, ...prettyData] });
-				this.setState({ logs: [...this.state.logs, ...prettyData] });
-				//console.log("STATE SET");
-				//console.log("STATE:", this.state.logs);
-
+				//existingLogs.push(...prettyData);
+				//console.log("NEXT LOGS LENGTH", this.state.nextLogs);
+				//console.log("RESPONSE LENGTH:", prettyData.length);
+				this.setState({ nextLogs: [...this.state.nextLogs, ...prettyData] }, () =>
+					this.setState({ logs: this.state.nextLogs }),
+				);
+				//console.log("CRASH? -- NEXT_KEY_CALL METHOD");
+				//console.log("SETTING LOG STATE IN CALLBACK OF NEXT LOGS");
+				// CONCAT IN REAL TIME
+				//this.setState({ logs: this.state.nextLogs });
+				//console.log("EXISTING LOGS LENGTH:", existingLogs.length);
+				//console.log("WHAT IS THIS", res.data.next_key);
 				if (res.data.next_key) {
-					//console.log("NEXT KEY EXISTS: ", res.data.next_key);
-					// is this too fast?????
 					this.nextKeyCall(created_from, created_to, res.data.next_key);
+				} else {
+					// console.log("LENGTH OF AGGREGATE LOGS", this.state.nextLogs.length);
+					// REMOVE THE 1st 50
+					//const currentState = [...this.state.nextLogs];
+					//console.log("IS THIS THE CORRECT LENGTH?", currentState.length);
+					this.setState({ logs: [...this.state.nextLogs], status: "Done" });
+					//this.setState({ logs: this.state.nextLogs });
 				}
-
-				/*TESTING if (res.data.next_key !== next_key && res.data.next_key) {
-					this.nextKeyCall(created_from, created_to, res.data.next_key);
-				}*/
-
-				// this.setState({ nextLogs: [...res.data.logs] });
-				// this.setState({ logs: this.state.nextLogs });
-				// this.setState({ logs: [...this.state.logs, ...res.data.logs] });
+				//this.setState({ logs: [...prettyData] });
+				/*if (res.data.next_key) {
+						this.setState({ logs: [...prettyData] });
+						this.nextKeyCall(
+							created_from,
+							created_to,
+							res.data.next_key,
+							this.state.logs,
+						);
+					} else {
+						this.setState({ logs: prettyData });
+					}*/
 			});
+		//}
 	}
 
 	reset() {
@@ -195,16 +250,117 @@ export default class MainView extends Component {
 		this.setState({ endDate: date });
 	}
 
+	getCallLogs(logs) {
+		this.setState({ logs });
+		//console.log("DATA FROM CHILD");
+	}
+
+	icon(direction) {
+		let point;
+		switch (direction) {
+			case "inbound":
+				point = (
+					<FontAwesomeIcon
+						style={{ color: "#6db65b" }}
+						size="2x"
+						icon={faArrowCircleRight}
+					/>
+				);
+				break;
+			case "outbound":
+				point = (
+					<FontAwesomeIcon
+						style={{ color: "#22a5ff" }}
+						size="2x"
+						icon={faArrowCircleLeft}
+					/>
+				);
+				break;
+			default:
+				return;
+		}
+		return point;
+	}
+
+	showCalls() {
+		let calls = [];
+
+		this.state.logs.forEach((call, index) => {
+			const {
+				id,
+				direction,
+				caller_id_name,
+				caller_id_number,
+				callee_id_name,
+				dialed_number,
+				hangup_cause,
+				datetime,
+				duration_seconds,
+			} = call;
+			calls.push(
+				<tr key={id}>
+					<td>{index + 1}</td>
+					<td>
+						{caller_id_name}
+						<p>{caller_id_number}</p>
+					</td>
+					<td>{this.icon(direction)}</td>
+					<td>
+						{callee_id_name}
+						<p>{dialed_number}</p>
+					</td>
+					<td>{hangup_cause}</td>
+					<td>{datetime}</td>
+					<td>{duration_seconds}</td>
+				</tr>,
+			);
+		});
+		//console.log("CALLS", calls);
+		//console.log("**");
+		return calls;
+	}
+
+	formatDate(date) {
+		//console.log("ARG INSIDE FORMAT DATE METHOD", date);
+		const copy = date;
+		const month = copy.getMonth();
+		//console.log("OG DATE OBJECT", date);
+		const day = date.getDate();
+		//const year = date.getYear();
+		//console.log("DATE", date);
+		const MONTHS = [
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December",
+		];
+		//console.log("MONTH", month);
+		//console.log("DAY", day);
+		//console.log("YEAR", year);
+		return `${MONTHS[month]} ${day}`;
+	}
+
+	addTag(input) {
+		console.log("WHAT IS THE VALUE", input);
+	}
+
 	render() {
+		//console.log("START DATE IS: ", this.state.startDate);
+		//console.log("END DATE IS: ", this.state.endDate);
 		return (
 			<div>
 				<div className="awning">
 					<p className="awning-title">
 						<FontAwesomeIcon className="awning-icon" icon={faFilter} />
 						FILTERS
-					</p>
-					<p>
-						<FontAwesomeIcon className="caret" icon={faCaretRight} size="3x" />
 					</p>
 				</div>
 				<div className="filters-window windows">
@@ -213,56 +369,89 @@ export default class MainView extends Component {
 						changeStart={this.startDate.bind(this)}
 						changeEnd={this.endDate.bind(this)}
 					/>
+					<div className="filter-button-container">
+						<button className="filter-button" onClick={() => this.search()}>
+							SEARCH
+						</button>
+					</div>
 
 					<DropDown
+						id={"select-user"}
 						selection={this.selectDropdown.bind(this)}
 						title="Select User"
 						data={this.state.users}
-						last="Show All Users"
+						last="All Users"
 					/>
 					<DropDown
+						id={"select-number"}
 						selection={this.selectDropdown.bind(this)}
 						title="Select Number"
 						data={this.state.numbers}
-						last="Show All Numbers"
+						last="All Numbers"
 					/>
 					<DropDown
-						auto={"Show All Directions"}
+						id={"select-direction"}
+						auto={"All Directions"}
 						selection={this.selectDropdown.bind(this)}
 						title="Select Direction"
 						data={this.state.directions}
-						last="Show All Directions"
+						last="All Directions"
 					/>
 					<div className="filters-input">
-						<p>{this.state.logs.length}</p>
-						<Filter filterTerm={this.filter.bind(this)} />
-						<button onClick={() => this.search()}>SEARCH</button>
-						<button onClick={() => this.reset()}>RESET</button>
+						<label htmlFor={"filter-input"} className="filter-label">
+							Filter
+						</label>
+						<Filter
+							filterTerm={this.filter.bind(this)}
+							onChange={event => this.addTag(event.target.value)}
+						/>
 					</div>
 				</div>
-				<div className="awning">
+				<div className="awning" id="awning-log">
 					<p className="awning-title">
 						<FontAwesomeIcon className="awning-icon" icon={faChartArea} />
 						LOGS
 					</p>
-					<p>
-						<FontAwesomeIcon className="caret" icon={faCaretRight} size="3x" />
-					</p>
+					<div className="meta-data">
+						<p className="meta-data-item">
+							Start: {this.formatDate(this.state.startDate)}
+							{", "}
+							{this.state.startTime}
+						</p>
+						<p className="meta-data-item">
+							End: {this.formatDate(this.state.endDate)}
+							{", "}
+							{this.state.endTime}
+						</p>
+						<p className="meta-data-item">
+							Status:{" "}
+							<span className={this.state.status === "Done" ? "done" : "loading"}>
+								{this.state.status}
+							</span>
+						</p>
+						<p className="meta-data-item">
+							Total: <span className="total">{this.state.logs.length}</span>
+						</p>
+						<p className="meta-data-item">
+							Filtered By:{" "}
+							<span className="loading">{this.state.tags.join(", ")}</span>
+						</p>
+					</div>
 				</div>
 				<div className="legs-window windows">
 					<table className="main-legs">
 						<thead>
 							<tr className="table-header">
 								<th>Index</th>
-								<th>From</th>
 								<th>Direction</th>
+								<th>From</th>
 								<th>To</th>
 								<th>Disposition</th>
 								<th>Time</th>
 								<th>Duration</th>
 							</tr>
 						</thead>
-						<MainLegs {...this.state} />
+						<MainLegs logs={this.state.logs} />
 					</table>
 				</div>
 			</div>
