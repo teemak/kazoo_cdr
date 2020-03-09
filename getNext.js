@@ -49,7 +49,7 @@ const next = (created_from, created_to, next_key) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.logs.length) {
-				console.log("LENGTH OF RESOLVED STATE:", state.logs.length);
+				//console.log("LENGTH OF RESOLVED STATE:", state.logs.length);
 				resolve(state);
 			} else {
 				reject("GET NEXT_KEY API DID NOT GET LOGS");
