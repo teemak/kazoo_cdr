@@ -3,6 +3,9 @@ import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";
+import Moment from "react-moment";
+import "moment-timezone";
+import formatCallee from "../helper/formatCallee";
 
 /* THIS IS WHERE THE INDEX OF ROWS IS DUPPED */
 export default class MainLegs extends Component {
@@ -106,16 +109,19 @@ export default class MainLegs extends Component {
 			default:
 				return;
 		}
-		//console.log("TIMEZONE:", result);
 		return result;
 	};
 
 	render() {
+		//console.log("TIMEZONE", this.state.timezone);
 		return (
 			<tbody>
 				{this.props.logs.map((call, index) => {
+					//console.log("CALL:", call);
 					const {
 						id,
+						to,
+						request,
 						direction,
 						caller_id_name,
 						caller_id_number,
@@ -123,20 +129,13 @@ export default class MainLegs extends Component {
 						dialed_number,
 						hangup_cause,
 						iso_8601,
-						datetime,
+						//datetime,
 						duration_seconds,
-						//unix_timestamp,
+						unix_timestamp,
 					} = call;
-					//const time = new Date(unix_timestamp * 1000);
-					//console.log("**", time);
-					//const date = this.formatDate(iso_8601);
-					const time = datetime.split(" ");
+					const d = iso_8601.split("-");
+					const date = `${d[1]}/${d[2]}/${d[0]}`;
 
-					//console.log("TIME:", time);
-					//console.log("ID:", id);
-					//const set = new Set();
-					//set.add(id);
-					//console.log(set.
 					return (
 						<tr key={id}>
 							<td>{index + 1}</td>
@@ -146,13 +145,17 @@ export default class MainLegs extends Component {
 								<p>{caller_id_number}</p>
 							</td>
 							<td>
-								{callee_id_name}
+								{formatCallee(callee_id_name, to, request)}
 								<p>{dialed_number}</p>
 							</td>
 							<td>{hangup_cause}</td>
 							<td>
-								{iso_8601}
-								<p>{time[1]}</p>
+								{date}
+								<p>
+									<Moment format={"h:mm A"} unix tz={this.state.timezone}>
+										{unix_timestamp}
+									</Moment>
+								</p>
 							</td>
 							<td>{this.formatDuration(duration_seconds)}</td>
 						</tr>

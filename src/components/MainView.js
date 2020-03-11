@@ -18,6 +18,7 @@ import formatDisposition from "../helper/formatDisposition";
 export default class MainView extends Component {
 	state = {
 		logs: [],
+		viewable: [],
 		users: [],
 		numbers: [],
 		directions: ["Inbound", "Outbound"],
@@ -32,6 +33,7 @@ export default class MainView extends Component {
 		startTime: "",
 		endTime: "",
 		status: "Done",
+		filter: false,
 	};
 
 	temps = {};
@@ -102,20 +104,54 @@ export default class MainView extends Component {
 	}
 
 	filter(filter) {
-		const result = [];
-		this.state.logs.forEach(call => {
-			const row = Object.values(call)
-				.flat()
-				.join("");
-			const match = row.includes(filter);
-			if (match) result.push(call);
-		});
-		this.setState({ logs: result });
-		/* RETURNS FILTERED LOGS */
+		//console.log("STATE.TAGS", this.state.tags);
+		if (this.state.filter === false) {
+			console.log("SIMPLE FILTER");
+			const result = [];
+			this.state.logs.forEach(call => {
+				const row = Object.values(call)
+					.flat()
+					.join("");
+				const match = row.includes(filter);
+				if (match) result.push(call);
+			});
+			this.setState({ viewable: result, filter: true });
+		} else if (this.state.filter) {
+			console.log("COMPOUND FILTER");
+			const result = [];
+			this.state.viewable.forEach(call => {
+				const match = call.direction.includes(filter.toLowerCase());
+				if (match) {
+					console.log("MATCH");
+					result.push(call);
+				}
+			});
+			this.setState({ viewable: result, filter: true });
+		}
+		console.log("STATE.TAGS", this.state.tags);
+		/*
+		if (filter === "All Users" || filter === "All Numbers" || filter === "All Directions") {
+			this.search();
+			this.setState({ filter: false });
+		} else if (this.state.tags) {
+			console.log("RUNNING COMPOUND FILTER");
+			const result = [];
+			this.state.viewable.forEach(call => {
+				const match = call.direction.includes(filter.toLowerCase());
+
+				if (match) {
+					console.log("MATCH");
+					result.push(call);
+				}
+			});
+			this.setState({ viewable: result, filter: true });
+		} 
+		*/
 	}
 
 	/* CALLBACK FROM PARENT */
 	selectDropdown(selection) {
+		//console.log("STATE IN DROPDOWN", this.state);
 		if (
 			selection === "All Users" ||
 			selection === "All Numbers" ||
@@ -125,7 +161,7 @@ export default class MainView extends Component {
 		}
 		this.filter(selection);
 		//const items = [this.state.tags.add(selection)];
-		//this.setState({ user: selection, tags: [this.state.tags, selection] });
+		//this.setState({ user: selection, tags: [selection] });
 		this.setState({ user: selection, tags: [...this.state.tags, selection] });
 	}
 
@@ -137,6 +173,7 @@ export default class MainView extends Component {
 	}
 
 	search() {
+		// SHOULD RESET ALL THE VALUES IN THE DROPDOWN
 		const base = 62167219200;
 		const created_from = parseInt(this.state.startDate.getTime() / 1000 + base);
 		const created_to = parseInt(this.state.endDate.getTime() / 1000 + base);
@@ -162,6 +199,7 @@ export default class MainView extends Component {
 					call.direction = formatDirection(call.caller_id_number);
 					return call;
 				});*/
+
 				const prettyData = logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					call.caller_id_number = formatPhoneNumber(call.caller_id_number);
@@ -175,7 +213,7 @@ export default class MainView extends Component {
 					this.setState({ nextLogs: [...prettyData], status: "Loading" });
 					this.nextKeyCall(created_from, created_to, next_key);
 				} else {
-					this.setState({ logs: prettyData });
+					this.setState({ logs: prettyData, filter: false, tags: [] });
 				}
 			});
 		this.getTime();
@@ -219,7 +257,11 @@ export default class MainView extends Component {
 					// REMOVE THE 1st 50
 					//const currentState = [...this.state.nextLogs];
 					//console.log("IS THIS THE CORRECT LENGTH?", currentState.length);
-					this.setState({ logs: [...this.state.nextLogs], status: "Done" });
+					this.setState({
+						logs: [...this.state.nextLogs],
+						status: "Done",
+						filter: false,
+					});
 					//this.setState({ logs: this.state.nextLogs });
 				}
 				//this.setState({ logs: [...prettyData] });
@@ -355,6 +397,11 @@ export default class MainView extends Component {
 	render() {
 		//console.log("START DATE IS: ", this.state.startDate);
 		//console.log("END DATE IS: ", this.state.endDate);
+		//console.log("STATE.FILTER", this.state.filter);
+		//console.log("LOGS", this.state.logs);
+		//console.log("VIEWABLE", this.state.viewable);
+		const logs = this.state.filter ? this.state.viewable : this.state.logs;
+		//console.log("WHAT IS LOGS?", logs);
 		return (
 			<div>
 				<div className="awning">
@@ -391,7 +438,6 @@ export default class MainView extends Component {
 					/>
 					<DropDown
 						id={"select-direction"}
-						auto={"All Directions"}
 						selection={this.selectDropdown.bind(this)}
 						title="Select Direction"
 						data={this.state.directions}
@@ -430,11 +476,10 @@ export default class MainView extends Component {
 							</span>
 						</p>
 						<p className="meta-data-item">
-							Total: <span className="total">{this.state.logs.length}</span>
+							Total: <span className="total">{logs.length}</span>
 						</p>
 						<p className="meta-data-item">
-							Filtered By:{" "}
-							<span className="loading">{this.state.tags.join(", ")}</span>
+							Filtered By: <span className="tags">{this.state.tags.join(", ")}</span>
 						</p>
 					</div>
 				</div>
@@ -451,7 +496,7 @@ export default class MainView extends Component {
 								<th>Duration</th>
 							</tr>
 						</thead>
-						<MainLegs logs={this.state.logs} />
+						<MainLegs logs={logs} />
 					</table>
 				</div>
 			</div>
