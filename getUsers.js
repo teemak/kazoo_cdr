@@ -5,7 +5,6 @@ const cb = new Crossbar({
 	port: process.env.API_PORT,
 	version: process.env.API_VERSION,
 });
-
 const state = [];
 
 const getToken = (credentials, account_name, account_id) => {
@@ -15,16 +14,17 @@ const getToken = (credentials, account_name, account_id) => {
 		},
 		(err, body) => {
 			cb.set_auth_token(body.auth_token);
-			getUsers(account_id);
+			getUsers();
 		},
 	);
 };
 getToken(process.env.credentials, process.env.account_name, process.env.account_id);
 
-const getUsers =()  => {
+const getUsers = () => {
 	cb.api.users.get_users(
 		{
-			url_params: { account_id: process.env.account_id },
+			url_params: { account_id: process.env.ceda_account_id },
+			query_string: "?page_size=1000",
 		},
 		(err, body) => {
 			const users = JSON.parse(body).data;

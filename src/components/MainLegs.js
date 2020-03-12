@@ -113,7 +113,6 @@ export default class MainLegs extends Component {
 	};
 
 	render() {
-		//console.log("TIMEZONE", this.state.timezone);
 		return (
 			<tbody>
 				{this.props.logs.map((call, index) => {
@@ -133,6 +132,7 @@ export default class MainLegs extends Component {
 						duration_seconds,
 						unix_timestamp,
 					} = call;
+					//console.log("UNIX TIMESTAMP", unix_timestamp);
 					const d = iso_8601.split("-");
 					const date = `${d[1]}/${d[2]}/${d[0]}`;
 

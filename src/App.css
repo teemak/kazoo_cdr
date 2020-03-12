@@ -242,3 +242,11 @@ select {
 .tags {
 	cursor: pointer;
 }
+
+.reset {
+	margin-top: 25px;
+}
+
+.filter {
+	margin-left: 15px;
+}

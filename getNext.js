@@ -17,28 +17,20 @@ const getToken = (credentials, account_name, account_id, created_from, created_t
 		},
 	);
 };
+
 getToken(process.env.credentials, process.env.account_name, process.env.account_id);
 
 const getLogs = (created_from, created_to, next_key) => {
 	cb.api.cdrs.get_interaction(
 		{
-			url_params: { account_id: process.env.account_id },
-			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}`,
+			url_params: { account_id: process.env.ceda_account_id },
+			query_string: `?created_from=${created_from}&created_to=${created_to}&start_key=${next_key}&page_size=100`,
 		},
 		(err, body) => {
-			// STATE NEEDS TO BE EMPTY TO PREVENT CACHING DUPLICATES
-			state.logs = []; // ALWAYS SENDS THE CORRECT AMOUNT
+			state.logs = [];
 			const logs = JSON.parse(body);
-			//console.log("SERVER SIDE LENGTH OF DATA", logs.data.length);
 			state.logs.push(...logs.data);
 			state.next_key = logs.next_start_key;
-			//console.log("** SERVER STATE:", state.logs.length);
-			//console.log("** GET NEXT LOGS RUN");
-			//console.log("NEED TO GET NEXT KEY TO PASS TO CLIENT:", logs.next_start_key);
-			//console.log("NEXT LOGS", logs);
-			//console.log("RESPONSE SHOULD ONLY BE 50:", logs);
-			//console.log("STATE SERVER SIDE ====> CLIENT", state);
-			//console.log("*** NEXT_KEY", state.next_key);
 		},
 	);
 };
@@ -49,12 +41,11 @@ const next = (created_from, created_to, next_key) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.logs.length) {
-				//console.log("LENGTH OF RESOLVED STATE:", state.logs.length);
 				resolve(state);
 			} else {
 				reject("GET NEXT_KEY API DID NOT GET LOGS");
 			}
-		}, 1500);
+		}, 3500);
 	});
 };
 

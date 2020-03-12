@@ -25,18 +25,13 @@ const getLogs = (created_from, created_to) => {
 	 * call direction will be determined on client
 	 */
 
-	//console.log("** COMPARE THIS TO CLIENT SIDE **");
-	//console.log("CREATED_FROM", created_from);
-	//console.log("CREATED_TO", created_to);
-
 	cb.api.cdrs.get_interaction(
 		{
-			url_params: { account_id: process.env.account_id },
-			query_string: `?created_from=${created_from}&created_to=${created_to}`,
+			url_params: { account_id: process.env.ceda_account_id },
+			query_string: `?created_from=${created_from}&created_to=${created_to}&page_size=100`,
 		},
 		(err, body) => {
 			const logs = JSON.parse(body);
-			//console.log("DATA TO PUSH TO STATE", logs.data);
 			state.next_key = logs.next_start_key;
 			state.logs.push(...logs.data);
 		},
@@ -52,7 +47,7 @@ const legs = (created_from, created_to) => {
 			} else {
 				reject("API DID NOT GET LOGS");
 			}
-		}, 1500);
+		}, 2000);
 	});
 };
 

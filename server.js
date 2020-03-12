@@ -8,6 +8,8 @@ const { numbers } = require("./getNumbers");
 const { next } = require("./getNext");
 const { legs } = require("./getLegs");
 const bodyParser = require("body-parser");
+//account_id=fe2befec1cd25fa45595eb28c8fa47a6
+//credentials=6855ad27b778c6a30ffc6ac95187b009
 
 app.use(bodyParser.json());
 
@@ -31,8 +33,12 @@ app.post("/next", (req, res) => {
 	});
 });
 
-app.get("/default", (req, res) => {
-	const logs = auto();
+app.post("/default", (req, res) => {
+	//console.log("REQUEST BODY", req.body);
+	const { created_from, created_to } = req.body;
+	//console.log("DEFAULT START POINT", created_from);
+	//console.log("DEFAULT END POINT", created_to);
+	const logs = auto(created_from, created_to);
 	logs.then(data => {
 		res.send(data);
 	});
