@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -33,7 +33,7 @@ export default class MainView extends Component {
 		isDisabled: true,
 		startTime: "1584024046",
 		endTime: "1584024046",
-		status: "Done",
+		status: "Loading",
 		filter: false,
 	};
 
@@ -81,6 +81,10 @@ export default class MainView extends Component {
 
 		axios.post("/default", { created_from, created_to }).then(res => {
 			let { logs } = res.data;
+
+			if (logs.length > 100) {
+				logs = logs.slice(-100);
+			}
 
 			const prettyData = logs.map(call => {
 				call.direction = formatDirection(call.caller_id_number);
@@ -211,7 +215,7 @@ export default class MainView extends Component {
 	}
 
 	search() {
-		console.log("SEARCH RUN");
+		this.setState({ filter: false });
 		// SHOULD RESET ALL THE VALUES IN THE DROPDOWN
 		const startMS = this.state.startDate.getTime();
 		const endMS = this.state.endDate.getTime();
@@ -233,7 +237,6 @@ export default class MainView extends Component {
 				 * if it caches we only want the most recent data
 				 * which is the last 50 or page length of api call
 				 */
-				console.log("SEARCH CACHE", logs.length);
 				if (logs.length > 100) {
 					logs = logs.slice(-100);
 				}
@@ -277,6 +280,11 @@ export default class MainView extends Component {
 				//console.log("WHAT IS THE RESPONSE OF NEXT KEY", res);
 				//console.log("RES.DATA", res.data.logs.length);
 				let { logs } = res.data;
+
+				if (logs.length > 100) {
+					logs = logs.slice(-100);
+				}
+
 				const prettyData = logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					call.caller_id_number = formatPhoneNumber(call.caller_id_number);
@@ -328,7 +336,7 @@ export default class MainView extends Component {
 			.then(res => {
 				//console.log("WHAT IS THE RESPONSE OF NEXT KEY", res);
 				let { logs } = res.data;
-				console.log("NEXT KEY CALL CACHE", logs.length);
+				//console.log("NEXT KEY CALL CACHE", logs.length);
 				if (logs.length > 100) {
 					logs = logs.slice(-100);
 				}
@@ -476,14 +484,14 @@ export default class MainView extends Component {
 	}
 
 	clearButton() {
-		this.setState({ viewable: this.state.logs, tags: [] });
+		this.setState({ filter: false, viewable: this.state.logs, tags: [] });
 	}
 
 	render() {
 		//console.log("** STATE.IS_DISABLED **", this.state.isDisabled);
 
 		const logs = this.state.filter ? this.state.viewable : this.state.logs;
-		const disabled = (
+		/* const disabled = (
 			<Fragment>
 				<DropDown
 					id={"select-user"}
@@ -491,8 +499,8 @@ export default class MainView extends Component {
 					title="Select User"
 					data={this.state.users}
 					last="All Users"
+					disabled={disableButton}
 				/>
-				{/*
 				<DropDown
 					id={"select-number"}
 					selection={this.selectDropdown.bind(this)}
@@ -507,7 +515,6 @@ export default class MainView extends Component {
 					data={this.state.directions}
 					last="All Directions"
 				/>
-				*/}
 				<div className="filter-button-container">
 					<button className="filter-button" onClick={() => this.clearButton()}>
 						REMOVE FILTER
@@ -517,9 +524,9 @@ export default class MainView extends Component {
 					</button>
 				</div>
 			</Fragment>
-		);
+		); */
 		const disableButton = this.state.status === "Loading" ? true : false;
-		const enabled = (
+		/* const enabled = (
 			<Fragment>
 				<CustomDate
 					{...this.state}
@@ -541,15 +548,17 @@ export default class MainView extends Component {
 					</button>
 				</div>
 			</Fragment>
-		);
+		); */
 		//console.log("STATE.DISABLED", this.state.isDisabled);
-		const isDisabled = this.state.isDisabled ? enabled : disabled;
-		const tags = this.state.isDisabled ? (
-			""
-		) : (
+		//const isDisabled = this.state.isDisabled ? enabled : disabled;
+		const tags = this.state.filter ? (
+			//const tags = this.state.isDisabled ? (
+
 			<p className="meta-data-item">
 				Filtered By: <span className="tags">{this.state.tags.join(", ")}</span>
 			</p>
+		) : (
+			""
 		);
 		//console.log("IS DISABLED", isDisabled);
 		//console.log("WHAT IS LOGS?", logs);
@@ -563,7 +572,53 @@ export default class MainView extends Component {
 					</p>
 				</div>
 
-				<div className="filters-window windows">{isDisabled}</div>
+				<div className="filters-window windows">
+					<CustomDate
+						{...this.state}
+						changeStart={this.startDate.bind(this)}
+						changeEnd={this.endDate.bind(this)}
+					/>
+					<div className="filter-button-container">
+						<button
+							className="filter-button"
+							onClick={() => this.search()}
+							disabled={disableButton}>
+							SEARCH DATE RANGE
+						</button>
+					</div>
+					<DropDown
+						id={"select-user"}
+						selection={this.selectDropdown.bind(this)}
+						title="Select User"
+						data={this.state.users}
+						last="All Users"
+						disabled={disableButton}
+					/>
+					{/*
+				<DropDown
+					id={"select-number"}
+					selection={this.selectDropdown.bind(this)}
+					title="Select Number"
+					data={this.state.numbers}
+					last="All Numbers"
+				/>
+				<DropDown
+					id={"select-direction"}
+					selection={this.selectDropdown.bind(this)}
+					title="Select Direction"
+					data={this.state.directions}
+					last="All Directions"
+				/>
+				*/}
+					<div className="filter-button-container">
+						<button
+							disabled={disableButton}
+							className="filter-button"
+							onClick={() => this.clearButton()}>
+							CLEAR FILTER
+						</button>
+					</div>
+				</div>
 
 				<div className="awning" id="awning-log">
 					<p className="awning-title">

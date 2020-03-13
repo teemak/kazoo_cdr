@@ -14,7 +14,7 @@ const getToken = (credentials, account_name, account_id) => {
 		},
 		(err, body) => {
 			cb.set_auth_token(body.auth_token);
-			console.log(body.auth_token);
+			//console.log(body.auth_token);
 		},
 	);
 };

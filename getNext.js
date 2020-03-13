@@ -45,7 +45,7 @@ const next = (created_from, created_to, next_key) => {
 			} else {
 				reject("GET NEXT_KEY API DID NOT GET LOGS");
 			}
-		}, 3500);
+		}, 4000);
 	});
 };
 

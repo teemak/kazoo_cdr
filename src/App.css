@@ -150,9 +150,8 @@ input.MuilnputBase-input.Muilnput-input {
 
 .filter-button-container {
 	display: flex;
-	justify-content: center;
 	align-items: center;
-	padding-right: 25px;
+	margin-top: -25px;
 }
 
 .filter-button {

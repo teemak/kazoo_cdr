@@ -1,6 +1,6 @@
 import React from "react";
 
-const DropDown = ({ data, title, last, selection, auto, id }) => {
+const DropDown = ({ data, title, last, disabled, selection, auto, id }) => {
 	return (
 		<div className="dropdown-container">
 			<div className="dropdown-title-container">
@@ -9,7 +9,10 @@ const DropDown = ({ data, title, last, selection, auto, id }) => {
 				</label>
 			</div>
 
-			<select id={title} onChange={event => selection(event.target.value)}>
+			<select
+				disabled={disabled}
+				id={title}
+				onChange={event => selection(event.target.value)}>
 				{data.map((item, index) => {
 					return (
 						<option key={item} value={item}>
