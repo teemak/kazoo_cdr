@@ -151,14 +151,13 @@ input.MuilnputBase-input.Muilnput-input {
 .filter-button-container {
 	display: flex;
 	align-items: center;
-	margin-top: -25px;
 }
 
 .filter-button {
 	font-weight: 600;
 	padding: 0 20px;
 	letter-spacing: 1px;
-	height: 30px;
+	height: 40px;
 	cursor: pointer;
 	border: .5px solid gray;
 	border-radius: 5px;
@@ -204,7 +203,7 @@ select {
 }
 
 #select-user {
-	padding-right: 65px;
+	margin-right: 130px;
 }
 
 #select-number {
@@ -247,5 +246,9 @@ select {
 }
 
 .filter {
+	margin-left: 15px;
+}
+
+.date-range-button {
 	margin-left: 15px;
 }

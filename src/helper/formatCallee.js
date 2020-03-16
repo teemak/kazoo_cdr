@@ -2,6 +2,7 @@
 
 const formatCallee = (callee, to, request) => {
 	//console.log("CALLEE IS THIS:", callee);
+	//console.log(callee);
 	//console.log("TO:", to);
 	let formattedCallee;
 
@@ -19,6 +20,7 @@ const formatCallee = (callee, to, request) => {
 			const c = request.split("@")[0];
 			const phoneNumber = `EXT ${c}`;
 			formattedCallee = phoneNumber;
+			return formattedCallee;
 		} else if (c.length === 10) {
 			//console.log("WHAT IS CALLEE", c);
 			// conference
@@ -30,21 +32,29 @@ const formatCallee = (callee, to, request) => {
 		//callee = phoneNumber;
 		//callee = to;
 	} else {
+		//console.log("TO", to);
+		//console.log("REQUEST", request);
 		//console.log("CALLEE IS NOT UNDEFINED:", callee);
-		const isNumber = callee.split("");
-		isNumber.map(digit => {
+		const isNumber = callee.split("@");
+		callee = isNumber;
+
+		/*isNumber.map(digit => {
 			//console.log("DIGIT IS:", digit);
 			if (typeof digit === "number") return false;
 			return true;
-		});
+		});*/
 
 		//CHECK FOR NUMBER OR STRING
 		//NUMBER FORMAT TO (123) 456-7890
+		//console.log("CALLEE", callee);//NAME
+		//console.log("TO", to); //SIP URL
+		//console.log("REQUEST", request); //IP ADDRESS && SIP URL
+
 		return callee;
 	}
-	formattedCallee = request;
-	//console.log("FORMATTED CALLEE", formattedCallee);
-	return formattedCallee;
+	// TEMP
+	//formattedCallee = request;
+	//return formattedCallee;
 };
 
 export default formatCallee;

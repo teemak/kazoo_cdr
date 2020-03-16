@@ -43,9 +43,9 @@ const next = (created_from, created_to, next_key) => {
 			if (state.logs.length) {
 				resolve(state);
 			} else {
-				reject("GET NEXT_KEY API DID NOT GET LOGS");
+				reject("GET NEXT_KEY API DID NOT GET LOGS", state);
 			}
-		}, 4000);
+		}, 3000);
 	});
 };
 

@@ -45,9 +45,13 @@ export default class MainLegs extends Component {
 	};
 
 	formatDuration = duration => {
+		//console.log("DURATION", duration);
+
 		let hours = ~~(duration / 3600);
 		let minutes = ~~((duration % 3600) / 60);
 		let seconds = duration % 60;
+
+		if (duration === undefined) return `00:00:00`;
 
 		if (hours < 10) {
 			hours = `0${hours}`;
@@ -113,9 +117,13 @@ export default class MainLegs extends Component {
 	};
 
 	render() {
+		//console.log("==> MAIN LEGS DATA", this.props.logs);
+		let { logs } = this.props;
+		//logs = logs.slice(-100);
+		//console.log("LOGS", logs.length);
 		return (
 			<tbody>
-				{this.props.logs.map((call, index) => {
+				{logs.map((call, index) => {
 					//console.log("CALL:", call);
 					const {
 						id,
@@ -133,6 +141,7 @@ export default class MainLegs extends Component {
 						unix_timestamp,
 					} = call;
 					//console.log("UNIX TIMESTAMP", unix_timestamp);
+					//console.log("ORIGINAL ISO_DATE", iso_8601);
 					const d = iso_8601.split("-");
 					const date = `${d[1]}/${d[2]}/${d[0]}`;
 

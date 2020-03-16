@@ -33,8 +33,9 @@ export default class MainView extends Component {
 		isDisabled: true,
 		startTime: "1584024046",
 		endTime: "1584024046",
-		status: "Loading",
+		status: "Idle",
 		filter: false,
+		pressed: false,
 	};
 
 	temps = {};
@@ -42,7 +43,7 @@ export default class MainView extends Component {
 	componentDidMount() {
 		this.getUsers();
 		//this.getNumbers();
-		this.defaultCall();
+		//this.defaultCall();
 		//this.getTime(1);
 	}
 
@@ -79,6 +80,10 @@ export default class MainView extends Component {
 		const created_from = parseInt(start.getTime() / 1000 + base);
 		const created_to = parseInt(end.getTime() / 1000 + base);
 
+		//console.log("Start    ", created_from);
+		//console.log("End      ", created_to);
+		//this.setState({ startTime: created_from, endTime: created_to });
+
 		axios.post("/default", { created_from, created_to }).then(res => {
 			let { logs } = res.data;
 
@@ -96,13 +101,15 @@ export default class MainView extends Component {
 			if (res.data.next_key) {
 				this.setState({ status: "Loading" });
 				this.nextKeyCallDefault(created_from, created_to, res.data.next_key);
+			} else {
+				this.setState({
+					logs: prettyData,
+					nextLogs: prettyData,
+					startTime: created_from,
+					endTime: created_to,
+					status: "Done",
+				});
 			}
-			this.setState({
-				logs: prettyData,
-				nextLogs: prettyData,
-				startTime: start.getTime(),
-				endTime: end.getTime(),
-			});
 		});
 	}
 
@@ -214,38 +221,86 @@ export default class MainView extends Component {
 		});
 	}
 
-	search() {
-		this.setState({ filter: false });
-		// SHOULD RESET ALL THE VALUES IN THE DROPDOWN
-		const startMS = this.state.startDate.getTime();
-		const endMS = this.state.endDate.getTime();
+	getToday(event) {
 		const base = 62167219200;
 
+		const start = new Date();
+		start.setHours(0, 0, 0, 0);
+		const end = new Date();
+		end.setHours(23, 59, 59, 999);
+
+		const startMS = start.getTime();
+		const endMS = end.getTime();
 		const created_from = parseInt(startMS / 1000 + base);
 		const created_to = parseInt(endMS / 1000 + base);
+
+		this.setState({ startDate: start, endDate: end, tags: [], status: "Loading" });
+
+		//console.log("WHAT IS THE END TIME", created_to);
+		axios
+			.post("/calls", {
+				created_from,
+				created_to,
+			})
+			.then(res => {
+				let { next_key, logs } = res.data;
+				if (logs.length > 100) {
+					logs = logs.slice(-100);
+				}
+				const prettyData = logs.map(call => {
+					call.direction = formatDirection(call.caller_id_number);
+					call.caller_id_number = formatPhoneNumber(call.caller_id_number);
+					call.dialed_number = formatPhoneNumber(call.callee_id_number);
+					call.hangup_cause = formatDisposition(call.callee_id_name, call.hangup_cause);
+					//call.callee_id_name = formatPhoneNumber(call.callee_id_name);
+					return call;
+				});
+
+				//console.log("WHAT IS PRETTY DATA", prettyData);
+
+				if (next_key) {
+					//console.log("NEXT_KEY EXISTS");
+					this.setState({ nextLogs: [...prettyData], status: "Loading" });
+					this.nextKeyCall(created_from, created_to, next_key);
+				} else if (this.state.default) {
+					//console.log("STATE.DEFAULT", this.state.default);
+					this.setState({
+						logs: prettyData,
+						filter: false,
+						tags: [],
+						isDisabled: true,
+					});
+				} else {
+					//console.log("ELSE STATEMENT", this.state.default);
+					this.setState({
+						logs: prettyData,
+						filter: false,
+						tags: [],
+						isDisabled: false,
+					});
+				}
+			});
+	}
+
+	search(event) {
+		const base = 62167219200;
+		const startMS = this.state.startDate.getTime();
+		const endMS = this.state.endDate.getTime();
+		const created_from = parseInt(startMS / 1000 + base);
+		const created_to = parseInt(endMS / 1000 + base);
+
+		this.setState({ status: "Loading", tags: [] });
 
 		axios
 			.post("/calls", {
 				created_from,
 				created_to,
-				//paginate=50
 			})
 			.then(res => {
 				let { next_key, logs } = res.data;
-				/* EVIL HACK
-				 * caches previous server response
-				 * if it caches we only want the most recent data
-				 * which is the last 50 or page length of api call
-				 */
 				if (logs.length > 100) {
 					logs = logs.slice(-100);
 				}
-
-				/*let prettyData = logs.map(call => {
-					call.direction = formatDirection(call.caller_id_number);
-					return call;
-				});*/
-
 				const prettyData = logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					call.caller_id_number = formatPhoneNumber(call.caller_id_number);
@@ -259,13 +314,21 @@ export default class MainView extends Component {
 					this.setState({ nextLogs: [...prettyData], status: "Loading" });
 					this.nextKeyCall(created_from, created_to, next_key);
 				} else if (this.state.default) {
-					this.setState({ logs: prettyData, filter: false, tags: [], isDisabled: true });
+					this.setState({
+						logs: prettyData,
+						filter: false,
+						tags: [],
+						isDisabled: true,
+					});
 				} else {
-					this.setState({ logs: prettyData, filter: false, tags: [], isDisabled: false });
+					this.setState({
+						logs: prettyData,
+						filter: false,
+						tags: [],
+						isDisabled: false,
+					});
 				}
 			});
-		//this.getTime();
-		//console.log("STATE.DISABLED", this.state.isDisabled);
 	}
 
 	/* RECURSIVE SCOPING EXISTS */
@@ -283,6 +346,15 @@ export default class MainView extends Component {
 
 				if (logs.length > 100) {
 					logs = logs.slice(-100);
+				} else if (!logs.length) {
+					this.setState({
+						logs: [...this.state.nextLogs],
+						status: "Done",
+						filter: false,
+						isDisabled: true,
+						pressed: false,
+					});
+					return;
 				}
 
 				const prettyData = logs.map(call => {
@@ -321,6 +393,7 @@ export default class MainView extends Component {
 						status: "Done",
 						filter: false,
 						isDisabled: true,
+						pressed: false,
 					});
 				}
 			});
@@ -339,7 +412,17 @@ export default class MainView extends Component {
 				//console.log("NEXT KEY CALL CACHE", logs.length);
 				if (logs.length > 100) {
 					logs = logs.slice(-100);
+				} else if (!logs.length) {
+					this.setState({
+						logs: [...this.state.nextLogs],
+						status: "Done",
+						filter: false,
+						isDisabled: true,
+						pressed: false,
+					});
+					return;
 				}
+
 				const prettyData = logs.map(call => {
 					call.direction = formatDirection(call.caller_id_number);
 					call.caller_id_number = formatPhoneNumber(call.caller_id_number);
@@ -360,6 +443,7 @@ export default class MainView extends Component {
 						status: "Done",
 						filter: false,
 						isDisabled: false,
+						pressed: false,
 					});
 				}
 			});
@@ -470,7 +554,7 @@ export default class MainView extends Component {
 	}
 
 	addTag(input) {
-		console.log("WHAT IS THE VALUE", input);
+		//console.log("WHAT IS THE VALUE", input);
 	}
 
 	restart() {
@@ -484,13 +568,17 @@ export default class MainView extends Component {
 	}
 
 	clearButton() {
-		this.setState({ filter: false, viewable: this.state.logs, tags: [] });
+		//console.log("CLEAR FILTER TAG PRESSED");
+		this.setState({ isDisabled: true, filter: false, viewable: this.state.logs, tags: [] });
 	}
 
 	render() {
 		//console.log("** STATE.IS_DISABLED **", this.state.isDisabled);
-
-		const logs = this.state.filter ? this.state.viewable : this.state.logs;
+		//console.log("STATE.FILTER", this.state.filter); //ALWAYS STARTS FALSE
+		let logs = this.state.filter ? this.state.viewable : this.state.logs;
+		//logs = logs.slice(-100);
+		//console.log("STATE.LOGS", this.state.logs);
+		//console.log("STATE.VIEWABLE", this.state.viewable);
 		/* const disabled = (
 			<Fragment>
 				<DropDown
@@ -581,7 +669,13 @@ export default class MainView extends Component {
 					<div className="filter-button-container">
 						<button
 							className="filter-button"
-							onClick={() => this.search()}
+							onClick={() => this.getToday()}
+							disabled={disableButton}>
+							GET TODAY
+						</button>
+						<button
+							className="filter-button date-range-button"
+							onClick={event => this.search(event)}
 							disabled={disableButton}>
 							SEARCH DATE RANGE
 						</button>
@@ -615,7 +709,7 @@ export default class MainView extends Component {
 							disabled={disableButton}
 							className="filter-button"
 							onClick={() => this.clearButton()}>
-							CLEAR FILTER
+							CLEAR FILTER TAG
 						</button>
 					</div>
 				</div>
@@ -627,9 +721,13 @@ export default class MainView extends Component {
 					</p>
 					<div className="meta-data">
 						<p className="meta-data-item">
-							Start: {this.formatDate(this.state.startDate)}
+							Start:{" "}
+							<span className="total">{this.formatDate(this.state.startDate)}</span>
 						</p>
-						<p className="meta-data-item">End: {this.formatDate(this.state.endDate)}</p>
+						<p className="meta-data-item">
+							End:{" "}
+							<span className="total">{this.formatDate(this.state.endDate)}</span>
+						</p>
 						<p className="meta-data-item">
 							Status:{" "}
 							<span className={this.state.status === "Done" ? "done" : "loading"}>

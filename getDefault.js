@@ -27,19 +27,28 @@ getToken(process.env.credentials, process.env.account_name, process.env.account_
 	return result;
 };*/
 
-const getLogs = (created_from, created_to, account_id) => {
-	/*const start = new Date();
+const getLogs = account_id => {
+	//const getLogs = (created_from, created_to, account_id) => {
+	const start = new Date();
 	start.setHours(0, 0, 0, 0);
 	let end = new Date();
-	end.setHours(23, 59, 59, 999);*/
+	end.setHours(23, 59, 59, 999);
+	const base = 62167219200;
+	const created_from = parseInt(start.getTime() / 1000 + base);
+	const created_to = parseInt(end.getTime() / 1000 + base);
+	/*console.log("DEFAULT");
+	console.log("START", created_from);
+	console.log("END", created_to);*/
 
 	cb.api.cdrs.get_interaction(
 		{
 			url_params: { account_id },
 			query_string: `?created_from=${created_from}&created_to=${created_to}&page_size=100`,
+			//query_string: `?created_from=${created_from}&created_to=${created_to}&page_size=100`,
 		},
 		(err, body) => {
 			const logs = JSON.parse(body);
+			console.log("LOGS.lENGTH", logs.length);
 			state.logs.push(...logs.data);
 			state.next_key = logs.next_start_key; //TEMP FOR TESTING
 			return new Promise((res, rej) => {
@@ -50,7 +59,8 @@ const getLogs = (created_from, created_to, account_id) => {
 };
 
 const auto = (created_from, created_to) => {
-	getLogs(created_from, created_to, process.env.ceda_account_id);
+	getLogs(process.env.ceda_account_id);
+	//getLogs(created_from, created_to, process.env.ceda_account_id);
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (state.logs.length) {
