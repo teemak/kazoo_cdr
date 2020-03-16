@@ -66,7 +66,7 @@ const auto = (created_from, created_to) => {
 			if (state.logs.length) {
 				resolve(state);
 			} else {
-				reject("DEFAULT API DID NOT GET LOGS");
+				reject("DEFAULT API DID NOT GET LOGS", state);
 			}
 		}, 2500);
 	});

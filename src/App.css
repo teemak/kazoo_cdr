@@ -80,16 +80,21 @@
 }
 
 .table-header {
-  height: 75px;
+  height: 50px;
+  text-align: start;
+}
+
+.head{ 
+	text-align: start;
+	padding-left: 15px;
 }
 
 thead {
-  background: silver;
-  color: white;
+  background: #FFF
 }
 
 tr:nth-child(even) {
-  background: silver;
+  background: #FFF;
 }
 
 .custom-date {
@@ -252,3 +257,39 @@ select {
 .date-range-button {
 	margin-left: 15px;
 }
+
+.caller, .callee, .disposition {
+	text-align: start;
+	padding-left: 15px;
+}
+
+.inbound {
+	cursor: pointer;
+}
+
+.tooltip {
+	position: relative;
+	top: 0px;
+	left: 0px;
+}
+
+/*
+.inbound::after {
+	display: none;
+	content: 'Inbound';
+	cursor: pointer;
+	background: gray;
+	padding: 2px;
+	border-radius: 3px;
+	color: white;
+	margin: 0 auto;
+	width: 56px;
+}
+
+.inbound:hover::after {
+	display: flex;
+	position: relative;
+	z-index: 100;
+	top: 0px;
+}
+*/

@@ -23,13 +23,13 @@ const formatDisposition = (caller = "", cause) => {
 			disposition = `Did not pick up`;
 			break;
 		case "UNALLOCATED_NUMBER":
-			disposition = `Number not assigned to a user|provider`;
+			disposition = `Number not assigned`;
 			break;
 		case "PROGRESS_TIMEOUT":
 			disposition = `Call timed out`;
 			break;
 		case "PICKED_OFF":
-			disposition = `Picked up at another extension`;
+			disposition = `Other extension picked`;
 			break;
 		case "NO_USER_RESPONSE":
 			disposition = `Timed out`;
@@ -44,7 +44,7 @@ const formatDisposition = (caller = "", cause) => {
 			disposition = `Connecting call`;
 			break;
 		case "NORMAL_UNSPECIFIED":
-			disposition = `Temporary unavailable`;
+			disposition = `Temporarily unavailable`;
 			break;
 		case "INVALID_NUMBER_FORMAT":
 			disposition = `Wrong number format`;

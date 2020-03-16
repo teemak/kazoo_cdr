@@ -145,22 +145,35 @@ export default class MainLegs extends Component {
 					const d = iso_8601.split("-");
 					const date = `${d[1]}/${d[2]}/${d[0]}`;
 
+					let title = direction.split("");
+					title[0] = title[0].toUpperCase();
+					title = title.join("");
+					//console.log("TITLE", title);
+					//let body = title.slice(1);
+					//title = (title[0].toUpperCase() + body).join();
+
+					//console.log("DIRECTION", title);
+
 					return (
 						<tr key={id}>
-							<td>{index + 1}</td>
-							<td>{this.icon(direction)}</td>
-							<td>
-								{caller_id_name}
-								<p>{caller_id_number}</p>
+							<td className={direction}>
+								{this.icon(direction)}
+								<span className="tooltip" />
 							</td>
-							<td>
-								{formatCallee(callee_id_name, to, request)}
-								<p>{dialed_number}</p>
-							</td>
-							<td>{hangup_cause}</td>
-							<td>
-								{date}
+							<td className="caller">
 								<p>
+									{caller_id_name} {caller_id_number}
+								</p>
+							</td>
+							<td className="callee">
+								<p>
+									{formatCallee(callee_id_name, to, request)} {dialed_number}
+								</p>
+							</td>
+							<td className="disposition">{hangup_cause}</td>
+							<td>
+								<p>
+									{date}{" "}
 									<Moment format={"h:mm A"} unix tz={this.state.timezone}>
 										{unix_timestamp}
 									</Moment>

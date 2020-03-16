@@ -722,13 +722,12 @@ export default class MainView extends Component {
 					<table className="main-legs">
 						<thead>
 							<tr className="table-header">
-								<th>Index</th>
-								<th>Direction</th>
-								<th>From</th>
-								<th>To</th>
-								<th>Disposition</th>
-								<th>Time</th>
-								<th>Duration</th>
+								<th className="head">Direction</th>
+								<th className="head">From</th>
+								<th className="head">To</th>
+								<th className="head">Disposition</th>
+								<th className="head">Datetime</th>
+								<th className="head">Duration</th>
 							</tr>
 						</thead>
 						<MainLegs logs={logs} />
