@@ -3,7 +3,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default class CustomDate extends Component {
-	state = { startDate: this.props.startDate, endDate: this.props.endDate };
+	state = {
+		startDate: this.props.startDate,
+		endDate: this.props.endDate,
+		startTime: this.props.startDate.setHours(0, 0, 0, 0),
+		endTime: this.props.endDate.getTime(),
+	};
+
+	componentDidMount() {
+		this.setState({ startDate: this.state.startDate.setHours(0, 0, 0, 0) });
+	}
 
 	changeStartDate(date) {
 		this.setState({ startDate: date });
@@ -12,6 +21,7 @@ export default class CustomDate extends Component {
 	changeStartTime(time) {
 		let date = this.state.startDate;
 		date.setTime(time);
+		//console.log("TIME START:", date.getTime());
 		this.setState({ startDate: date });
 	}
 
@@ -42,7 +52,7 @@ export default class CustomDate extends Component {
 						<p className="date-label">Start Time</p>
 						<DatePicker
 							className="start-date"
-							selected={this.state.startDate}
+							selected={this.state.startTime}
 							onChange={date => {
 								this.changeStartTime(date.getTime());
 								this.props.changeStart(date);

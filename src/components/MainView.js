@@ -668,16 +668,10 @@ export default class MainView extends Component {
 					/>
 					<div className="filter-button-container">
 						<button
-							className="filter-button"
-							onClick={() => this.getToday()}
-							disabled={disableButton}>
-							GET TODAY
-						</button>
-						<button
 							className="filter-button date-range-button"
 							onClick={event => this.search(event)}
 							disabled={disableButton}>
-							SEARCH DATE RANGE
+							SEARCH
 						</button>
 					</div>
 					<DropDown
@@ -688,28 +682,12 @@ export default class MainView extends Component {
 						last="All Users"
 						disabled={disableButton}
 					/>
-					{/*
-				<DropDown
-					id={"select-number"}
-					selection={this.selectDropdown.bind(this)}
-					title="Select Number"
-					data={this.state.numbers}
-					last="All Numbers"
-				/>
-				<DropDown
-					id={"select-direction"}
-					selection={this.selectDropdown.bind(this)}
-					title="Select Direction"
-					data={this.state.directions}
-					last="All Directions"
-				/>
-				*/}
 					<div className="filter-button-container">
 						<button
 							disabled={disableButton}
 							className="filter-button"
 							onClick={() => this.clearButton()}>
-							CLEAR FILTER TAG
+							REMOVE FILTER
 						</button>
 					</div>
 				</div>
