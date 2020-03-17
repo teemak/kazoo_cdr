@@ -10,23 +10,18 @@ export default class CustomDate extends Component {
 		endTime: this.props.endDate.getTime(),
 	};
 
-	componentDidMount() {
-		this.setState({ startDate: this.state.startDate.setHours(0, 0, 0, 0) });
-	}
-
 	changeStartDate(date) {
-		this.setState({ startDate: date });
-	}
-
-	changeStartTime(time) {
-		let date = this.state.startDate;
-		date.setTime(time);
-		//console.log("TIME START:", date.getTime());
 		this.setState({ startDate: date });
 	}
 
 	changeEndDate(date) {
 		this.setState({ endDate: date });
+	}
+
+	changeStartTime(time) {
+		let date = this.state.startDate;
+		date.setTime(time);
+		this.setState({ startDate: date });
 	}
 
 	changeEndTime(time) {
@@ -52,7 +47,7 @@ export default class CustomDate extends Component {
 						<p className="date-label">Start Time</p>
 						<DatePicker
 							className="start-date"
-							selected={this.state.startTime}
+							selected={this.state.startDate}
 							onChange={date => {
 								this.changeStartTime(date.getTime());
 								this.props.changeStart(date);

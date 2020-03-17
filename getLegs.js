@@ -45,7 +45,7 @@ const legs = (created_from, created_to) => {
 			if (state.logs.length) {
 				resolve(state);
 			} else {
-				reject("API DID NOT GET LOGS");
+				reject("GET LEGS API DID NOT GET LOGS");
 			}
 		}, 2000);
 	});

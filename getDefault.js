@@ -36,9 +36,6 @@ const getLogs = account_id => {
 	const base = 62167219200;
 	const created_from = parseInt(start.getTime() / 1000 + base);
 	const created_to = parseInt(end.getTime() / 1000 + base);
-	/*console.log("DEFAULT");
-	console.log("START", created_from);
-	console.log("END", created_to);*/
 
 	cb.api.cdrs.get_interaction(
 		{
@@ -48,7 +45,6 @@ const getLogs = account_id => {
 		},
 		(err, body) => {
 			const logs = JSON.parse(body);
-			console.log("LOGS.lENGTH", logs.length);
 			state.logs.push(...logs.data);
 			state.next_key = logs.next_start_key; //TEMP FOR TESTING
 			return new Promise((res, rej) => {
