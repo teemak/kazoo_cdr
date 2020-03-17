@@ -156,9 +156,8 @@ export default class MainLegs extends Component {
 
 					return (
 						<tr key={id}>
-							<td className={direction}>
-								{this.icon(direction)}
-								<span className="tooltip" />
+							<td className="direction-container">
+								<p className={direction}>{this.icon(direction)}</p>
 							</td>
 							<td className="caller">
 								<p>

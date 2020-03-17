@@ -263,33 +263,42 @@ select {
 	padding-left: 15px;
 }
 
-.inbound {
+/* TOOLTIP */
+p.inbound, p.outbound {
 	cursor: pointer;
+	margin: -1px;
 }
 
-.tooltip {
-	position: relative;
-	top: 0px;
-	left: 0px;
-}
-
-/*
-.inbound::after {
-	display: none;
-	content: 'Inbound';
+.inbound::after, .outbound::after {
+	visibility: hidden;
+	display: flex;
 	cursor: pointer;
 	background: gray;
-	padding: 2px;
+	padding: 2px 4px;
 	border-radius: 3px;
 	color: white;
-	margin: 0 auto;
-	width: 56px;
+	//text-align: center;
+	margin-left: 20px;
+	position: relative;
+	top: -15px;
 }
 
-.inbound:hover::after {
-	display: flex;
-	position: relative;
-	z-index: 100;
-	top: 0px;
+.inbound::after {
+	content: 'Inbound';
+	width: 55px;
+	margin: 0 auto;
 }
-*/
+
+.outbound::after {
+	content: 'Outbound';
+	width: 70px;
+}
+
+.inbound:hover::after, .outbound:hover::after {
+	visibility: visible;
+}
+
+.fa-arrow-circle-left, .fa-arrow-circle-right {
+	position: relative;
+	top: 10px;
+}
