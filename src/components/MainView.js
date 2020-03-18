@@ -452,7 +452,8 @@ export default class MainView extends Component {
 
 	render() {
 		let logs = this.state.filter ? this.state.viewable : this.state.logs;
-		const disableButton = this.state.status === "Loading" ? true : false;
+		const disableButton =
+			this.state.status === "Loading" || this.state.status === "Idle" ? true : false;
 		const tags = this.state.filter ? (
 			<p className="meta-data-item">
 				Filtered By: <span className="tags">{this.state.tags.join(", ")}</span>
