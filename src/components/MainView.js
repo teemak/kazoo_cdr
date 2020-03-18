@@ -454,6 +454,7 @@ export default class MainView extends Component {
 		let logs = this.state.filter ? this.state.viewable : this.state.logs;
 		const disableButton =
 			this.state.status === "Loading" || this.state.status === "Idle" ? true : false;
+		const disableSearchButton = this.state.status === "Loading" ? true : false;
 		const tags = this.state.filter ? (
 			<p className="meta-data-item">
 				Filtered By: <span className="tags">{this.state.tags.join(", ")}</span>
@@ -480,7 +481,7 @@ export default class MainView extends Component {
 						<button
 							className="filter-button date-range-button"
 							onClick={event => this.search(event)}
-							disabled={disableButton}>
+							disabled={disableSearchButton}>
 							SEARCH
 						</button>
 					</div>
