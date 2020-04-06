@@ -40,9 +40,9 @@ const calls = (created_from, created_to) => {
 			if (state.logs.length) {
 				resolve(state);
 			} else {
-				reject("API DID NOT GET LOGS");
+				reject("API DID NOT GET LOGS <getLogs.js 43>");
 			}
-		}, 2000);
+		}, 2500);
 	});
 };
 
